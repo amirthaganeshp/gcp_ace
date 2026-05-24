@@ -157,21 +157,35 @@
                       <strong id="dashboard-completed-topics">0/10</strong>
                     </div>
                     <div class="progress-detail-item">
-                      <span>Next Exam Date Suggestion</span>
-                      <strong>2 Weeks</strong>
+                      <span>Suggested Readiness</span>
+                      <strong id="dashboard-readiness-grade">Needs Review</strong>
                     </div>
                   </div>
                 </div>
+
+                <!-- Domain Accordion Progress -->
+                <div class="dashboard-accordion-section" id="dashboard-domain-progress-accordion">
+                  <!-- Dynamically populated in app.js -->
+                </div>
               </div>
               
-              <div class="glass-card quiz-promo-card">
+              <!-- Interactive Flashcard deck -->
+              <div class="glass-card flashcard-card">
                 <div class="promo-header">
-                  <i class="fa-solid fa-bolt"></i>
-                  <span>Quick Study</span>
+                  <i class="fa-solid fa-clone"></i>
+                  <span>Concept Booster Flashcards</span>
                 </div>
-                <h3>Ready to test your knowledge?</h3>
-                <p>Take a mini 5-question scenario quiz covering network rules, IAM policies, and cloud architectures.</p>
-                <button class="btn btn-primary start-quick-quiz">Start Assessment <i class="fa-solid fa-arrow-right"></i></button>
+                <h3>Daily Exam Pro-Tip Drills</h3>
+                <p>Click the card to reveal the core concept. Mark them to track your retention progress.</p>
+                <div class="flashcard-deck-wrapper">
+                  <div class="flashcard-deck" id="flashcard-deck-container">
+                    <!-- Loaded dynamically in app.js -->
+                  </div>
+                </div>
+                <div class="flashcard-controls">
+                  <button class="btn btn-secondary" id="btn-flash-review"><i class="fa-solid fa-rotate-left"></i> Review Later</button>
+                  <button class="btn btn-primary" id="btn-flash-master"><i class="fa-solid fa-check-double"></i> Mastered</button>
+                </div>
               </div>
             </div>
             
@@ -201,6 +215,23 @@
                     <strong>bq mk</strong> creates BigQuery datasets/tables, while <strong>gsutil mb</strong> (or <strong>gcloud storage buckets create</strong>) creates GCS buckets.
                   </li>
                 </ul>
+              </div>
+
+              <!-- Recent Activity Log Timeline -->
+              <div class="glass-card activity-card" style="margin-top: 30px;">
+                <h3><i class="fa-solid fa-clock-rotate-left text-purple"></i> Your Activity Timeline</h3>
+                <div class="activity-timeline-wrapper">
+                  <ul class="activity-timeline" id="activity-timeline-container">
+                    <li class="activity-item">
+                      <div class="activity-dot"></div>
+                      <div class="activity-info">
+                        <strong>Dashboard Initialized</strong>
+                        <span>Welcome to your premium GCP ACE exam simulator console!</span>
+                        <small>Just now</small>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -244,9 +275,13 @@
               <h1>Major GCP Services Directory</h1>
               <p>Flip and explore crucial GCP services, core features, scenarios, and pro tips optimized for ACE questions.</p>
             </div>
+            <div class="view-toggle-bar">
+              <button class="toggle-view-btn active" id="btn-services-grid"><i class="fa-solid fa-grip-vertical"></i> Flip-Card Grid</button>
+              <button class="toggle-view-btn" id="btn-services-map"><i class="fa-solid fa-diagram-project"></i> Visual Architecture Map</button>
+            </div>
           </div>
           
-          <div class="filter-bar">
+          <div class="filter-bar" id="services-filter-bar">
             <button class="filter-btn active" data-category="all">All Services</button>
             <button class="filter-btn" data-category="Compute">Compute</button>
             <button class="filter-btn" data-category="Storage">Storage</button>
@@ -261,6 +296,21 @@
           
           <div class="services-grid" id="services-grid-container">
             <!-- Dynamically populated service cards -->
+          </div>
+
+          <!-- Hierarchical Box Architecture Map -->
+          <div class="architecture-map-container hidden" id="architecture-map-container">
+            <!-- Rendered dynamically in app.js -->
+          </div>
+
+          <!-- Service Map Modal Drawer Overlay -->
+          <div class="service-modal-overlay hidden" id="service-map-modal">
+            <div class="service-modal-content glass-card">
+              <button class="modal-close-btn" id="btn-close-map-modal"><i class="fa-solid fa-xmark"></i></button>
+              <div id="service-map-modal-body">
+                <!-- Loaded dynamically in app.js -->
+              </div>
+            </div>
           </div>
         </section>
         
@@ -284,30 +334,54 @@
               
               <div class="wizard-choices">
                 <button class="wizard-choice-card" data-wizard-type="compute">
-                  <div class="choice-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                  <div class="choice-icon"><i class="fa-solid fa-laptop-code text-blue"></i></div>
                   <h3>Compute / Hosting</h3>
-                  <p>Virtual Machines, Containers, Serverless, or PaaS</p>
+                  <p>Virtual Machines, Containers, Standard/Flex PaaS, or FaaS</p>
                 </button>
                 
+                <button class="wizard-choice-card" data-wizard-type="database">
+                  <div class="choice-icon"><i class="fa-solid fa-database text-green"></i></div>
+                  <h3>Databases & Caching</h3>
+                  <p>SQL, Spanner Global scale, Firestore Documents, Bigtable, or Redis</p>
+                </button>
+
                 <button class="wizard-choice-card" data-wizard-type="storage">
-                  <div class="choice-icon"><i class="fa-solid fa-database"></i></div>
-                  <h3>Databases & Storage</h3>
-                  <p>SQL, NoSQL, Object storage, Big Data, or File systems</p>
+                  <div class="choice-icon"><i class="fa-solid fa-hard-drive text-yellow"></i></div>
+                  <h3>Storage & POSIX Files</h3>
+                  <p>Object bucket classes, lifecycle, local SSDs, or Filestore NFS</p>
                 </button>
                 
                 <button class="wizard-choice-card" data-wizard-type="networking">
-                  <div class="choice-icon"><i class="fa-solid fa-route"></i></div>
+                  <div class="choice-icon"><i class="fa-solid fa-route text-purple"></i></div>
                   <h3>Networking Connectors</h3>
-                  <p>Connecting VPCs, On-Premise links, or Load Balancers</p>
+                  <p>Global L7/L4 Load Balancers, custom VPC, Peering, or HA VPN</p>
+                </button>
+
+                <button class="wizard-choice-card" data-wizard-type="security">
+                  <div class="choice-icon"><i class="fa-solid fa-shield-halved text-red"></i></div>
+                  <h3>IAM & Identity Models</h3>
+                  <p>Predefined roles, service accounts User role, or OS Login</p>
+                </button>
+
+                <button class="wizard-choice-card" data-wizard-type="analytics">
+                  <div class="choice-icon"><i class="fa-solid fa-chart-pie text-orange"></i></div>
+                  <h3>Analytics & Big Data</h3>
+                  <p>BigQuery SQL warehouse, Dataflow pipelines, or Hadoop clusters</p>
                 </button>
               </div>
             </div>
             
-            <!-- Wizard Step 2: Dynamic Questions -->
+            <!-- Wizard Step 2: Dynamic Questions & Visual Pathway -->
             <div class="wizard-step hidden" id="wizard-step-questions">
               <div class="wizard-progress-bar-wrapper">
                 <div class="wizard-progress-bar-fill" id="wizard-progress-fill"></div>
               </div>
+              
+              <!-- Live Green Glowing Pathway tree indicator -->
+              <div class="wizard-path-visualizer" id="wizard-pathway-visual">
+                <!-- Dynamically rendered visual tree path in app.js -->
+              </div>
+
               <h2 id="wizard-question-text">Dynamic Question Goes Here?</h2>
               <p class="wizard-subtitle" id="wizard-question-subtext">Context and guidance regarding the question.</p>
               
@@ -375,6 +449,30 @@
                 <label for="param-bucket">BUCKET_NAME</label>
                 <input type="text" id="param-bucket" value="company-audit-logs-unique">
               </div>
+              <div class="input-group">
+                <label for="param-cluster">GKE_CLUSTER</label>
+                <input type="text" id="param-cluster" value="production-k8s">
+              </div>
+              <div class="input-group">
+                <label for="param-sa">SERVICE_ACCOUNT</label>
+                <input type="text" id="param-sa" value="compute-reader-sa">
+              </div>
+              <div class="input-group">
+                <label for="param-template">VM_TEMPLATE</label>
+                <input type="text" id="param-template" value="standard-e2-template">
+              </div>
+              <div class="input-group">
+                <label for="param-size">DISK_SIZE</label>
+                <input type="text" id="param-size" value="200GB">
+              </div>
+              <div class="input-group">
+                <label for="param-member">IAM_MEMBER</label>
+                <input type="text" id="param-member" value="user:dev@company.com">
+              </div>
+              <div class="input-group">
+                <label for="param-role">IAM_ROLE</label>
+                <input type="text" id="param-role" value="roles/storage.objectViewer">
+              </div>
             </div>
           </div>
           
@@ -393,40 +491,95 @@
           </div>
         </section>
         
-        <!-- ================= TAB: QUIZ ================= -->
         <section id="tab-quiz" class="tab-pane">
           <div class="quiz-container">
             
-            <!-- Quiz Landing Screen -->
+            <!-- Quiz Landing Screen (Practice vs Exam Mode Selector) -->
             <div id="quiz-landing" class="glass-card quiz-card-panel">
               <div class="quiz-landing-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-              <h1>Scenario-Based Practice Assessment</h1>
-              <p>Test your knowledge on complex scenarios, exact IAM policies, CLI execution flags, and networking strategies. These questions are calibrated to match the rigor and wording of the GCP Associate Cloud Engineer (ACE) certification exam.</p>
+              <h1>Interactive Scenario Simulator</h1>
+              <p>Test your knowledge on complex scenarios, exact IAM policies, CLI execution flags, and networking strategies. calibrated to match the rigor and wording of the actual GCP Associate Cloud Engineer (ACE) certification exam.</p>
               
-              <div class="quiz-setup-parameters">
-                <h3>Select Assessment Size:</h3>
-                <div class="quiz-size-options">
-                  <button class="btn btn-outline quiz-size-btn active" data-size="5">5 Questions</button>
-                  <button class="btn btn-outline quiz-size-btn" data-size="10">10 Questions</button>
-                  <button class="btn btn-outline quiz-size-btn" data-size="all">All Available</button>
+              <div class="quiz-mode-select-grid">
+                <!-- Practice Mode Config Card -->
+                <div class="quiz-mode-card" id="mode-card-practice">
+                  <div class="mode-card-header">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    <h3>Practice Mode</h3>
+                  </div>
+                  <p>Study at your own pace. Receive immediate feedback with detailed official solution guidelines for each scenario.</p>
+                  
+                  <div class="quiz-setup-parameters">
+                    <h4>Select Study Topics:</h4>
+                    <div class="quiz-topic-checkboxes">
+                      <label><input type="checkbox" name="quiz-topic" value="domain-1" checked> Domain 1: Compute</label>
+                      <label><input type="checkbox" name="quiz-topic" value="domain-2" checked> Domain 2: Storage/DB</label>
+                      <label><input type="checkbox" name="quiz-topic" value="domain-3" checked> Domain 3: Network</label>
+                      <label><input type="checkbox" name="quiz-topic" value="domain-4" checked> Domain 4: Analytics</label>
+                      <label><input type="checkbox" name="quiz-topic" value="domain-5" checked> Domain 5: Security</label>
+                    </div>
+                    
+                    <h4 style="margin-top: 15px;">Select Size:</h4>
+                    <div class="quiz-size-options">
+                      <button class="btn btn-outline quiz-size-btn active" data-size="5">5 Qs</button>
+                      <button class="btn btn-outline quiz-size-btn" data-size="10">10 Qs</button>
+                      <button class="btn btn-outline quiz-size-btn" data-size="20">20 Qs</button>
+                      <button class="btn btn-outline quiz-size-btn" data-size="all">All</button>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary" id="btn-start-practice" style="margin-top: 20px; width: 100%; justify-content: center;">Start Practice <i class="fa-solid fa-play"></i></button>
+                </div>
+
+                <!-- Exam Mode Config Card -->
+                <div class="quiz-mode-card" id="mode-card-exam">
+                  <div class="mode-card-header">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    <h3>Official Exam Mode</h3>
+                  </div>
+                  <p>A rigorous simulated test mimicking the official GCP ACE certification environment. Ideal for full assessment:</p>
+                  <ul class="exam-rules-list">
+                    <li><i class="fa-solid fa-check"></i> <strong>50 randomized questions</strong> from all domains.</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>2-hour countdown timer</strong> (120 minutes limit).</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>Silent lock-in</strong> (no immediate answers shown).</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>Mark for Review</strong> & Navigator Grid map.</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>Exhaustive grading report</strong> & solution review at the end.</li>
+                  </ul>
+                  <button class="btn btn-primary" id="btn-start-exam" style="margin-top: 20px; width: 100%; justify-content: center; background: var(--accent-orange-gradient);">Initialize 2HR Exam <i class="fa-solid fa-stopwatch"></i></button>
                 </div>
               </div>
-              
-              <button class="btn btn-primary btn-large" id="start-quiz-btn">Initialize Exam <i class="fa-solid fa-play"></i></button>
             </div>
             
             <!-- Quiz Running Screen -->
             <div id="quiz-running" class="glass-card quiz-card-panel hidden">
               <div class="quiz-running-header">
                 <div class="quiz-progress-text">Question <span id="current-q-index">1</span> of <span id="total-q-count">5</span></div>
-                <div class="quiz-score-badge"><span id="live-correct-count">0</span> Correct</div>
+                
+                <!-- Countdown Timer Container -->
+                <div id="quiz-timer-container" class="quiz-timer hidden">
+                  <i class="fa-solid fa-clock"></i> <span id="quiz-timer-display">02:00:00</span>
+                </div>
+
+                <div class="quiz-score-badge" id="quiz-live-score-wrapper"><span id="live-correct-count">0</span> Correct</div>
               </div>
               
               <div class="quiz-progress-bar-wrapper">
                 <div class="quiz-progress-bar-fill" id="quiz-live-progress-fill"></div>
               </div>
+
+              <!-- Question Navigator Grid & Flag for Review -->
+              <div class="quiz-navigator-panel" id="quiz-nav-panel">
+                <div class="quiz-navigator-grid" id="quiz-navigator-grid">
+                  <!-- Jumps dynamically to specific questions -->
+                </div>
+              </div>
               
               <div class="quiz-question-box">
+                <div class="question-flag-header">
+                  <span class="question-domain-label" id="quiz-question-domain">Domain 1</span>
+                  <button class="btn btn-outline btn-small" id="quiz-mark-review-btn">
+                    <i class="fa-regular fa-flag"></i> <span id="mark-review-text">Mark for Review</span>
+                  </button>
+                </div>
                 <p class="quiz-question-text" id="quiz-question-display">The scenario goes here...</p>
                 
                 <div class="quiz-options-list" id="quiz-options-display">
@@ -451,7 +604,8 @@
               <div class="results-badge-icon" id="results-icon-container">
                 <i class="fa-solid fa-trophy"></i>
               </div>
-              <h1>Assessment Results</h1>
+              <h1 id="results-title">Assessment Results</h1>
+              <div class="results-passing-tag" id="results-pass-fail-tag">PASSED</div>
               <p class="results-subtitle" id="results-comment">Excellent job! You are well on your way to becoming a Certified Associate Cloud Engineer.</p>
               
               <div class="results-score-card">
@@ -478,8 +632,17 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Post-Exam Question review block -->
+              <div class="post-exam-review-section hidden" id="post-exam-review-container">
+                <h3><i class="fa-solid fa-list-check"></i> Post-Exam Detailed Question Review</h3>
+                <p class="post-exam-review-sub text-muted" style="font-size:12px; margin-bottom: 15px;">Review each scenario along with your response selection and the official guidelines.</p>
+                <div class="post-exam-review-list" id="post-exam-review-list">
+                  <!-- Dynamically populated review cards in app.js -->
+                </div>
+              </div>
               
-              <div class="results-actions">
+              <div class="results-actions" style="margin-top: 25px;">
                 <button class="btn btn-primary" id="quiz-retry-btn"><i class="fa-solid fa-arrows-rotate"></i> Try Another Quiz</button>
                 <button class="btn btn-secondary" id="quiz-goto-syllabus-btn"><i class="fa-solid fa-book"></i> Review Syllabus</button>
               </div>
