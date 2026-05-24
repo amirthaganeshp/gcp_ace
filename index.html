@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GCP ACE Initiative Study & Interactive Guide</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons for Dashboard visual indicators -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo-icon">
+          <i class="fa-solid fa-cloud"></i>
+        </div>
+        <div class="brand-text">
+          <h2>GCP ACE</h2>
+          <span>Initiative Study Guide</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="dashboard">
+          <i class="fa-solid fa-chart-line"></i> <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="syllabus">
+          <i class="fa-solid fa-book-open"></i> <span>Study Topics</span>
+        </button>
+        <button class="nav-item" data-tab="services">
+          <i class="fa-solid fa-cubes"></i> <span>Service Catalog</span>
+        </button>
+        <button class="nav-item" data-tab="wizard">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Decision Flow</span>
+        </button>
+        <button class="nav-item" data-tab="commands">
+          <i class="fa-solid fa-terminal"></i> <span>CLI Cheat Sheet</span>
+        </button>
+        <button class="nav-item" data-tab="quiz">
+          <i class="fa-solid fa-graduation-cap"></i> <span>Practice Quiz</span>
+        </button>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="user-badge">
+          <div class="avatar">ACE</div>
+          <div class="user-info">
+            <h4>Cloud Candidate</h4>
+            <p>Exam Ready: <span id="readiness-pct">0%</span></p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Header -->
+      <header class="app-header">
+        <div class="header-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="global-search" placeholder="Search topics, services, or CLI commands (e.g. gcloud, IAM, storage)...">
+          <div id="search-results-dropdown" class="search-dropdown hidden"></div>
+        </div>
+        
+        <div class="header-actions">
+          <button id="theme-toggle" class="header-btn" title="Toggle Light/Dark Theme">
+            <i class="fa-solid fa-sun"></i>
+          </button>
+          <a href="https://github.com" target="_blank" class="header-btn github-btn" title="Publish to GitHub">
+            <i class="fa-brands fa-github"></i>
+          </a>
+        </div>
+      </header>
+      
+      <!-- Dynamic Content Tabs -->
+      <div class="content-body">
+        
+        <!-- ================= TAB: DASHBOARD ================= -->
+        <section id="tab-dashboard" class="tab-pane active">
+          <div class="welcome-banner">
+            <div class="welcome-text">
+              <h1>Master the GCP Associate Cloud Engineer Exam</h1>
+              <p>Welcome to your interactive ACE study accelerator. Explore exam domains, run interactive service matrices, review scenario checklists, and take mock quizzes designed to mirror the actual certification exam.</p>
+            </div>
+            <div class="welcome-badge">
+              <i class="fa-solid fa-award"></i>
+            </div>
+          </div>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon purple"><i class="fa-solid fa-book"></i></div>
+              <div class="stat-info">
+                <h3>5 Domains</h3>
+                <p>Fully Indexed Topics</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon blue"><i class="fa-solid fa-cubes"></i></div>
+              <div class="stat-info">
+                <h3><span id="stat-services-count">0</span> Services</h3>
+                <p>GCP Catalog Cards</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green"><i class="fa-solid fa-terminal"></i></div>
+              <div class="stat-info">
+                <h3><span id="stat-commands-count">0</span> Commands</h3>
+                <p>Interactive CLI Scripts</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orange"><i class="fa-solid fa-question"></i></div>
+              <div class="stat-info">
+                <h3><span id="stat-quiz-count">0</span> Scenarios</h3>
+                <p>Practice Mock Questions</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="dashboard-layouts">
+            <!-- Left Panel: Quick Actions & Progress -->
+            <div class="dashboard-panel-left">
+              <div class="glass-card progress-card">
+                <h3>Your Readiness Tracker</h3>
+                <div class="progress-container">
+                  <div class="progress-radial">
+                    <svg viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" class="bg-circle"></circle>
+                      <circle cx="50" cy="50" r="40" class="fg-circle" id="dashboard-progress-circle"></circle>
+                    </svg>
+                    <div class="radial-text">
+                      <span id="dashboard-progress-text">0%</span>
+                      <small>Syllabus Read</small>
+                    </div>
+                  </div>
+                  
+                  <div class="progress-details">
+                    <div class="progress-detail-item">
+                      <span>Quiz Success Rate</span>
+                      <strong id="dashboard-quiz-score">0%</strong>
+                    </div>
+                    <div class="progress-detail-item">
+                      <span>Completed Topics</span>
+                      <strong id="dashboard-completed-topics">0/10</strong>
+                    </div>
+                    <div class="progress-detail-item">
+                      <span>Next Exam Date Suggestion</span>
+                      <strong>2 Weeks</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="glass-card quiz-promo-card">
+                <div class="promo-header">
+                  <i class="fa-solid fa-bolt"></i>
+                  <span>Quick Study</span>
+                </div>
+                <h3>Ready to test your knowledge?</h3>
+                <p>Take a mini 5-question scenario quiz covering network rules, IAM policies, and cloud architectures.</p>
+                <button class="btn btn-primary start-quick-quiz">Start Assessment <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+            </div>
+            
+            <!-- Right Panel: Key ACE Exam Tips -->
+            <div class="dashboard-panel-right">
+              <div class="glass-card tips-card">
+                <h3><i class="fa-solid fa-lightbulb text-yellow"></i> Critical ACE Exam Cheat-Codes</h3>
+                <ul class="tips-list">
+                  <li>
+                    <span class="tip-tag storage">STORAGE</span>
+                    <strong>Need Global ACID + SQL?</strong> Choose <strong>Cloud Spanner</strong>. Need standard regional SQL? Choose <strong>Cloud SQL</strong>.
+                  </li>
+                  <li>
+                    <span class="tip-tag compute">COMPUTE</span>
+                    <strong>Standard vs Autopilot GKE:</strong> Autopilot handles nodes, sizes, and updates. Standard lets you configure nodes yourself. Choose Autopilot in scenario-based questions unless raw control is required.
+                  </li>
+                  <li>
+                    <span class="tip-tag network">NETWORKING</span>
+                    <strong>Private Google Access</strong> lets GCE VMs with *only internal private IPs* securely access Google APIs (like GCS buckets) without going through the public internet.
+                  </li>
+                  <li>
+                    <span class="tip-tag iam">SECURITY</span>
+                    <strong>Never download service account keys</strong> in real-world scenarios. Attach service accounts directly to VM Metadata or use Workload Identity.
+                  </li>
+                  <li>
+                    <span class="tip-tag cli">CLI</span>
+                    <strong>bq mk</strong> creates BigQuery datasets/tables, while <strong>gsutil mb</strong> (or <strong>gcloud storage buckets create</strong>) creates GCS buckets.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- ================= TAB: SYLLABUS ================= -->
+        <section id="tab-syllabus" class="tab-pane">
+          <div class="section-title">
+            <div>
+              <h1>GCP ACE Exam Syllabus & Topics</h1>
+              <p>Explore the 5 official domains. Mark topics as completed to update your progress tracker.</p>
+            </div>
+            <button class="btn btn-secondary reset-study-progress"><i class="fa-solid fa-rotate-left"></i> Reset Progress</button>
+          </div>
+          
+          <div class="syllabus-grid">
+            <!-- Sidebar: Domains List -->
+            <div class="domain-sidebar-panel">
+              <div class="domain-menu" id="domain-menu-list">
+                <!-- Dynamically loaded -->
+              </div>
+            </div>
+            
+            <!-- Main: Topic Details -->
+            <div class="topic-details-panel">
+              <div class="glass-card active-topic-card" id="active-topic-container">
+                <div class="no-selection-placeholder">
+                  <i class="fa-solid fa-book-bookmark"></i>
+                  <h3>Select a topic from the left sidebar to start studying</h3>
+                  <p>Each topic contains exam summaries, interactive "when-to-use" checklists, and exact CLI commands needed for the Associate Cloud Engineer exam.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- ================= TAB: SERVICES ================= -->
+        <section id="tab-services" class="tab-pane">
+          <div class="section-title">
+            <div>
+              <h1>Major GCP Services Directory</h1>
+              <p>Flip and explore crucial GCP services, core features, scenarios, and pro tips optimized for ACE questions.</p>
+            </div>
+          </div>
+          
+          <div class="filter-bar">
+            <button class="filter-btn active" data-category="all">All Services</button>
+            <button class="filter-btn" data-category="Compute">Compute</button>
+            <button class="filter-btn" data-category="Storage">Storage</button>
+            <button class="filter-btn" data-category="Database">Databases</button>
+            <button class="filter-btn" data-category="Networking">Networking</button>
+            <button class="filter-btn" data-category="Analytics">Analytics & Big Data</button>
+            <button class="filter-btn" data-category="Integration">Integration</button>
+            <button class="filter-btn" data-category="Management">Management</button>
+            <button class="filter-btn" data-category="Security">Security</button>
+            <button class="filter-btn" data-category="Operations">Operations</button>
+          </div>
+          
+          <div class="services-grid" id="services-grid-container">
+            <!-- Dynamically populated service cards -->
+          </div>
+        </section>
+        
+        <!-- ================= TAB: DECISION WIZARD ================= -->
+        <section id="tab-wizard" class="tab-pane">
+          <div class="welcome-banner wizard-banner">
+            <div class="welcome-text">
+              <h1>Interactive GCP Service Decision Flow</h1>
+              <p>Struggling to remember which GCP compute, database, or network architecture fits each exam question? Walk through this scenario wizard and get instant recommendations along with structural reasoning.</p>
+            </div>
+            <div class="welcome-badge">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+          </div>
+          
+          <div class="wizard-container glass-card">
+            <!-- Wizard Step 1: Selector Category -->
+            <div class="wizard-step" id="wizard-step-1">
+              <h2>What type of service decision are you planning?</h2>
+              <p class="wizard-subtitle">Select the foundational architecture category below.</p>
+              
+              <div class="wizard-choices">
+                <button class="wizard-choice-card" data-wizard-type="compute">
+                  <div class="choice-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                  <h3>Compute / Hosting</h3>
+                  <p>Virtual Machines, Containers, Serverless, or PaaS</p>
+                </button>
+                
+                <button class="wizard-choice-card" data-wizard-type="storage">
+                  <div class="choice-icon"><i class="fa-solid fa-database"></i></div>
+                  <h3>Databases & Storage</h3>
+                  <p>SQL, NoSQL, Object storage, Big Data, or File systems</p>
+                </button>
+                
+                <button class="wizard-choice-card" data-wizard-type="networking">
+                  <div class="choice-icon"><i class="fa-solid fa-route"></i></div>
+                  <h3>Networking Connectors</h3>
+                  <p>Connecting VPCs, On-Premise links, or Load Balancers</p>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Wizard Step 2: Dynamic Questions -->
+            <div class="wizard-step hidden" id="wizard-step-questions">
+              <div class="wizard-progress-bar-wrapper">
+                <div class="wizard-progress-bar-fill" id="wizard-progress-fill"></div>
+              </div>
+              <h2 id="wizard-question-text">Dynamic Question Goes Here?</h2>
+              <p class="wizard-subtitle" id="wizard-question-subtext">Context and guidance regarding the question.</p>
+              
+              <div class="wizard-question-options" id="wizard-options-container">
+                <!-- Dynamically populated options -->
+              </div>
+              
+              <div class="wizard-navigation-actions">
+                <button class="btn btn-secondary" id="wizard-back-btn"><i class="fa-solid fa-chevron-left"></i> Back</button>
+              </div>
+            </div>
+            
+            <!-- Wizard Step 3: Result Summary -->
+            <div class="wizard-step hidden" id="wizard-step-result">
+              <div class="result-celebration">
+                <i class="fa-solid fa-circle-check"></i>
+                <h2>Recommended GCP Service</h2>
+              </div>
+              
+              <div class="recommended-service-showcase" id="wizard-recommendation-showcase">
+                <!-- Dynamic recommendation card -->
+              </div>
+              
+              <div class="wizard-reasoning-section">
+                <h3>Why this is correct for your exam scenario:</h3>
+                <ul id="wizard-reasoning-list">
+                  <!-- Dynamic bullets -->
+                </ul>
+              </div>
+              
+              <div class="wizard-navigation-actions">
+                <button class="btn btn-primary" id="wizard-restart-btn"><i class="fa-solid fa-arrows-rotate"></i> Restart Wizard</button>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- ================= TAB: COMMANDS ================= -->
+        <section id="tab-commands" class="tab-pane">
+          <div class="section-title">
+            <div>
+              <h1>Interactive CLI Command Reference</h1>
+              <p>Explore essential CLI commands (`gcloud`, `gsutil`, `bq`, `kubectl`). Fill in variables to generate ready-to-run terminal scripts.</p>
+            </div>
+          </div>
+          
+          <!-- Command Builder Tool -->
+          <div class="glass-card command-builder-card">
+            <h3><i class="fa-solid fa-sliders"></i> Dynamic Command Generator</h3>
+            <p>Type custom parameters below. They will immediately substitute into the commands below for fast practice!</p>
+            <div class="builder-inputs-grid">
+              <div class="input-group">
+                <label for="param-project">PROJECT_ID</label>
+                <input type="text" id="param-project" value="my-ace-project-123">
+              </div>
+              <div class="input-group">
+                <label for="param-vm">VM_NAME</label>
+                <input type="text" id="param-vm" value="web-server-prod">
+              </div>
+              <div class="input-group">
+                <label for="param-zone">ZONE</label>
+                <input type="text" id="param-zone" value="us-central1-a">
+              </div>
+              <div class="input-group">
+                <label for="param-bucket">BUCKET_NAME</label>
+                <input type="text" id="param-bucket" value="company-audit-logs-unique">
+              </div>
+            </div>
+          </div>
+          
+          <div class="command-content-layout">
+            <div class="command-sidebar">
+              <div class="command-cat-menu" id="command-cat-menu-container">
+                <!-- Dynamically populated categories -->
+              </div>
+            </div>
+            
+            <div class="command-results-panel">
+              <div class="command-list" id="command-list-container">
+                <!-- Dynamically populated commands -->
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- ================= TAB: QUIZ ================= -->
+        <section id="tab-quiz" class="tab-pane">
+          <div class="quiz-container">
+            
+            <!-- Quiz Landing Screen -->
+            <div id="quiz-landing" class="glass-card quiz-card-panel">
+              <div class="quiz-landing-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+              <h1>Scenario-Based Practice Assessment</h1>
+              <p>Test your knowledge on complex scenarios, exact IAM policies, CLI execution flags, and networking strategies. These questions are calibrated to match the rigor and wording of the GCP Associate Cloud Engineer (ACE) certification exam.</p>
+              
+              <div class="quiz-setup-parameters">
+                <h3>Select Assessment Size:</h3>
+                <div class="quiz-size-options">
+                  <button class="btn btn-outline quiz-size-btn active" data-size="5">5 Questions</button>
+                  <button class="btn btn-outline quiz-size-btn" data-size="10">10 Questions</button>
+                  <button class="btn btn-outline quiz-size-btn" data-size="all">All Available</button>
+                </div>
+              </div>
+              
+              <button class="btn btn-primary btn-large" id="start-quiz-btn">Initialize Exam <i class="fa-solid fa-play"></i></button>
+            </div>
+            
+            <!-- Quiz Running Screen -->
+            <div id="quiz-running" class="glass-card quiz-card-panel hidden">
+              <div class="quiz-running-header">
+                <div class="quiz-progress-text">Question <span id="current-q-index">1</span> of <span id="total-q-count">5</span></div>
+                <div class="quiz-score-badge"><span id="live-correct-count">0</span> Correct</div>
+              </div>
+              
+              <div class="quiz-progress-bar-wrapper">
+                <div class="quiz-progress-bar-fill" id="quiz-live-progress-fill"></div>
+              </div>
+              
+              <div class="quiz-question-box">
+                <p class="quiz-question-text" id="quiz-question-display">The scenario goes here...</p>
+                
+                <div class="quiz-options-list" id="quiz-options-display">
+                  <!-- Custom options loaded here -->
+                </div>
+              </div>
+              
+              <div class="quiz-action-bar">
+                <button class="btn btn-secondary hidden" id="quiz-show-explanation-btn"><i class="fa-solid fa-circle-question"></i> Toggle Explanation</button>
+                <button class="btn btn-primary" id="quiz-submit-btn" disabled>Submit Answer <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              
+              <!-- Quiz Explanation Box (collapsed initially) -->
+              <div class="quiz-explanation-box hidden" id="quiz-explanation-display-box">
+                <h4><i class="fa-solid fa-circle-info"></i> Official Solution & Explanation</h4>
+                <p id="quiz-explanation-text">Explanation goes here...</p>
+              </div>
+            </div>
+            
+            <!-- Quiz Results Screen -->
+            <div id="quiz-results" class="glass-card quiz-card-panel hidden">
+              <div class="results-badge-icon" id="results-icon-container">
+                <i class="fa-solid fa-trophy"></i>
+              </div>
+              <h1>Assessment Results</h1>
+              <p class="results-subtitle" id="results-comment">Excellent job! You are well on your way to becoming a Certified Associate Cloud Engineer.</p>
+              
+              <div class="results-score-card">
+                <div class="score-circle">
+                  <span id="results-score-pct">80%</span>
+                  <small>Your Score</small>
+                </div>
+                <div class="score-details">
+                  <div class="score-detail-row">
+                    <span>Total Questions</span>
+                    <strong id="results-total-q">5</strong>
+                  </div>
+                  <div class="score-detail-row">
+                    <span>Correct Answers</span>
+                    <strong id="results-correct-q">4</strong>
+                  </div>
+                  <div class="score-detail-row">
+                    <span>Incorrect Answers</span>
+                    <strong id="results-incorrect-q">1</strong>
+                  </div>
+                  <div class="score-detail-row">
+                    <span>Minimum Passing Mark</span>
+                    <strong>70%</strong>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="results-actions">
+                <button class="btn btn-primary" id="quiz-retry-btn"><i class="fa-solid fa-arrows-rotate"></i> Try Another Quiz</button>
+                <button class="btn btn-secondary" id="quiz-goto-syllabus-btn"><i class="fa-solid fa-book"></i> Review Syllabus</button>
+              </div>
+            </div>
+            
+          </div>
+        </section>
+        
+      </div>
+    </main>
+    
+  </div>
+  
+  <!-- Global Toast Notification -->
+  <div id="global-toast" class="toast hidden">
+    <i class="fa-solid fa-circle-check"></i> <span id="toast-message">Copied to clipboard!</span>
+  </div>
+
+  <!-- Load Database Data first, then main application logic -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
