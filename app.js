@@ -1,4 +1,4 @@
-// GCP ACE Interactive Study Guide - Application Control Logic
+// GCP ACE Study Accelerator - Application Control Logic
 document.addEventListener("DOMContentLoaded", () => {
   // Ensure database is available
   const db = window.GCP_DATABASE;
@@ -110,6 +110,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const quizTimerContainer = document.getElementById("quiz-timer-container");
   const quizTimerDisplay = document.getElementById("quiz-timer-display");
   const quizLiveScoreWrapper = document.getElementById("quiz-live-score-wrapper");
+  const currentQIndexDisplay = document.getElementById("current-q-index");
+  const totalQCountDisplay = document.getElementById("total-q-count");
   const liveCorrectCountDisplay = document.getElementById("live-correct-count");
   const liveProgressFill = document.getElementById("quiz-live-progress-fill");
   const quizNavigatorGrid = document.getElementById("quiz-navigator-grid");
@@ -189,7 +191,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (tabId === "syllabus") {
       renderSyllabusSidebar();
     } else if (tabId === "services") {
-      renderServicesGrid();
       renderVisualArchitectureMap();
     } else if (tabId === "commands") {
       renderCommandCategories();
@@ -521,9 +522,16 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
       
+      <div class="topic-view-section syl-visual-section">
+        <h3><i class="fa-solid fa-diagram-project text-orange"></i> Architecture Map & Visual Breakdown</h3>
+        <div class="syl-visual-block-wrapper">
+          ${renderSyllabusVisual(topic.id)}
+        </div>
+      </div>
+
       <div class="topic-view-section">
         <h3><i class="fa-solid fa-circle-info text-blue"></i> Overview & Summary</h3>
-        <p class="topic-summary">${topic.summary}</p>
+        <div class="topic-summary">${formatTopicSummary(topic.summary)}</div>
       </div>
 
       <div class="topic-view-section">
@@ -568,6 +576,19 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         </div>
       </div>
+
+      ${topic.id === "hybrid-lb" ? `
+        <div class="topic-view-section" style="margin-top: 20px;">
+          <h3><i class="fa-solid fa-circle-nodes text-purple"></i> Cross-Section Quick Navigation</h3>
+          <div class="syllabus-catalog-cta-box" style="background: rgba(161, 66, 244, 0.05); border: 1px solid rgba(161, 66, 244, 0.2); padding: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+            <div>
+              <strong style="color: var(--accent-purple); font-size: 13px; display: block; margin-bottom: 2px;">Interactive Service Integration</strong>
+              <span style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">Open the Cloud Load Balancing (CLB) Service Catalog detailed Layer 7 (HTTP/S) vs Layer 4 (Network Proxy/Passthrough) decision flowchart directly.</span>
+            </div>
+            <button class="btn btn-primary btn-small" id="btn-jump-to-clb-catalog" style="font-size: 11px; padding: 8px 16px; white-space: nowrap;"><i class="fa-solid fa-network-wired"></i> View CLB Map</button>
+          </div>
+        </div>
+      ` : ""}
     `;
 
     // Completion toggle
@@ -592,6 +613,678 @@ document.addEventListener("DOMContentLoaded", () => {
         copyToClipboard(substituteCommandParams(btn.getAttribute("data-raw")));
       });
     });
+
+    const jumpBtn = activeTopicContainer.querySelector("#btn-jump-to-clb-catalog");
+    if (jumpBtn) {
+      jumpBtn.addEventListener("click", () => {
+        switchTab("services");
+        const clbService = db.services.find(s => s.id === "cloud-load-balancing");
+        if (clbService) {
+          state.serviceViewMode = "map";
+          const btnMap = document.getElementById("btn-services-map");
+          const btnGrid = document.getElementById("btn-services-grid");
+          if (btnMap && btnGrid) {
+            btnGrid.classList.remove("active");
+            btnMap.classList.add("active");
+            servicesGridEl.classList.add("hidden");
+            architectureMapContainer.classList.remove("hidden");
+            servicesFilterBar.classList.add("hidden");
+          }
+          showServiceMapModal(clbService);
+        }
+      });
+    }
+  }
+
+  function formatTopicSummary(summaryText) {
+    if (!summaryText) return "";
+    
+    // Split by bullet point markers: e.g. "• <strong>" or "• "
+    const parts = summaryText.split(/•\s*(?=<strong>)/);
+    
+    if (parts.length <= 1) {
+      return `<p class="topic-summary-paragraph" style="font-size:13px; line-height:1.6; color:var(--text-secondary);">${summaryText}</p>`;
+    }
+    
+    let formattedHtml = `<p class="topic-summary-paragraph" style="margin-bottom: 20px; font-size:13px; line-height:1.6; color:var(--text-secondary);">${parts[0].trim()}</p>`;
+    
+    for (let i = 1; i < parts.length; i++) {
+      const section = parts[i].trim();
+      
+      // Match category header, e.g. "<strong>Machine Families</strong>:" or similar
+      const headerMatch = section.match(/^<strong>(.*?)<\/strong>:\s*([\s\S]*)/);
+      
+      if (headerMatch) {
+        const title = headerMatch[1];
+        let content = headerMatch[2];
+        
+        // Replace inner list indicators " - <i>" or "-"
+        const listItems = content.split(/\r?\n\s*-\s*/);
+        let listHtml = "";
+        
+        if (listItems.length > 1) {
+          listHtml = `<ul class="summary-bullet-list">`;
+          if (listItems[0].trim()) {
+            listHtml += `<li class="summary-bullet-item">${listItems[0].trim()}</li>`;
+          }
+          for (let j = 1; j < listItems.length; j++) {
+            listHtml += `<li class="summary-bullet-item">${listItems[j].trim()}</li>`;
+          }
+          listHtml += `</ul>`;
+        } else {
+          listHtml = `<p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">${content}</p>`;
+        }
+        
+        // Choose an icon based on title keywords
+        let icon = "fa-cubes";
+        const tLower = title.toLowerCase();
+        if (tLower.includes("machine") || tLower.includes("compute") || tLower.includes("gke") || tLower.includes("flex") || tLower.includes("run")) icon = "fa-laptop-code text-blue";
+        else if (tLower.includes("storage") || tLower.includes("local") || tLower.includes("volume") || tLower.includes("disk")) icon = "fa-hard-drive text-yellow";
+        else if (tLower.includes("database") || tLower.includes("cache") || tLower.includes("spanner") || tLower.includes("sql")) icon = "fa-database text-green";
+        else if (tLower.includes("vpc") || tLower.includes("network") || tLower.includes("route") || tLower.includes("ip") || tLower.includes("hybrid")) icon = "fa-route text-purple";
+        else if (tLower.includes("security") || tLower.includes("iam") || tLower.includes("role") || tLower.includes("account") || tLower.includes("auth")) icon = "fa-shield-halved text-red";
+        else if (tLower.includes("ops") || tLower.includes("operation") || tLower.includes("monitor") || tLower.includes("log") || tLower.includes("trace")) icon = "fa-chart-line text-purple";
+        
+        formattedHtml += `
+          <div class="summary-subsection-card">
+            <h4><i class="fa-solid ${icon}"></i> ${title}</h4>
+            ${listHtml}
+          </div>
+        `;
+      } else {
+        formattedHtml += `
+          <div class="summary-subsection-card">
+            <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">${section}</p>
+          </div>
+        `;
+      }
+    }
+    
+    return formattedHtml;
+  }
+
+  // ==========================================================================
+  // SYLLABUS DYNAMIC VISUAL BLUEPRINTS - 11 TOPICS
+  // ==========================================================================
+  function renderSyllabusVisual(topicId) {
+    if (topicId === "gce-topics") {
+      return `
+        <div class="syl-visual-gce">
+          <div class="visual-header-sub"><i class="fa-solid fa-server text-blue"></i> Compute Engine VM Provisioning & Storage Lifecycle</div>
+          <div class="gce-provision-flow">
+            <div class="flow-step">
+              <span class="step-num">1</span>
+              <h4>Blueprint Template</h4>
+              <p>Deploy identical VMs via <strong>Instance Templates</strong> and <strong>Custom Images</strong> using custom <strong>Startup Scripts</strong> to automate server package installation on boot.</p>
+            </div>
+            <div class="flow-arrow"><i class="fa-solid fa-right-long"></i></div>
+            <div class="flow-step">
+              <span class="step-num">2</span>
+              <h4>Security & Shield</h4>
+              <p>Configure <strong>Shielded VMs</strong> (Secure Boot, measured boot, vTPM verification) and <strong>Confidential VMs</strong> (AMD SEV cryptographically encrypts active RAM data in-use).</p>
+            </div>
+            <div class="flow-arrow"><i class="fa-solid fa-right-long"></i></div>
+            <div class="flow-step">
+              <span class="step-num">3</span>
+              <h4>Billing Strategy</h4>
+              <p>Leverage <strong>Spot VMs</strong> (up to 91% discount, terminated with 30s warnings, max 24h runtime) or standard VMs with automatic <strong>Live Migration</strong> during maintenance.</p>
+            </div>
+            <div class="flow-arrow"><i class="fa-solid fa-right-long"></i></div>
+            <div class="flow-step">
+              <span class="step-num">4</span>
+              <h4>Attached Storage</h4>
+              <p>Mount <strong>Persistent Disks</strong> (standard/SSD block, expanded online), ultra-low latency ephemeral <strong>Local SSDs</strong>, or multi-writer POSIX-compliant <strong>Filestore</strong> NFS shared mounts.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    if (topicId === "gke-topics") {
+      return `
+        <div class="syl-visual-gke">
+          <div class="visual-header-sub"><i class="fa-solid fa-cubes text-blue"></i> GKE Cluster Architecture: Control Plane vs. Worker Nodes</div>
+          <div class="gke-grid">
+            <!-- Left: Control Plane (Google Managed) -->
+            <div class="gke-col gke-control-plane-box">
+              <div class="gke-box-header"><i class="fa-solid fa-dharmachakra"></i> Control Plane (Google Managed)</div>
+              <div class="gke-component">
+                <strong>kube-apiserver</strong>
+                <span>Central communication hub. Exposes the Kubernetes API endpoint for kubectl and internal node routing.</span>
+              </div>
+              <div class="gke-component">
+                <strong>kube-scheduler</strong>
+                <span>Assigns newly created pods to healthy worker nodes based on resource capacities and constraints.</span>
+              </div>
+              <div class="gke-component">
+                <strong>kube-controller-manager</strong>
+                <span>Runs controller daemons (Node Controller, Job Controller, Endpoint Controller) to maintain target states.</span>
+              </div>
+              <div class="gke-component">
+                <strong>etcd Database</strong>
+                <span>Consistent, highly-available distributed key-value database representing the source-of-truth cluster state.</span>
+              </div>
+            </div>
+            
+            <!-- Right: Worker Node VM -->
+            <div class="gke-col gke-node-box">
+              <div class="gke-box-header"><i class="fa-solid fa-server"></i> Worker Node VM (Standard or Autopilot managed)</div>
+              <div class="gke-node-layers">
+                <!-- Node OS -->
+                <div class="gke-layer os-layer">
+                  Node OS: Container-Optimized OS (COS) / Ubuntu Linux
+                </div>
+                
+                <!-- Daemons -->
+                <div class="gke-daemons-grid">
+                  <div class="gke-layer daemon-layer">
+                    <strong>Kubelet Agent</strong>
+                    <span>Node daemon ensuring containers run successfully inside target Pod specs.</span>
+                  </div>
+                  <div class="gke-layer daemon-layer">
+                    <strong>Kube-Proxy</strong>
+                    <span>Maintains network routing tables to expose services across the cluster.</span>
+                  </div>
+                </div>
+                
+                <!-- Container Runtime -->
+                <div class="gke-layer runtime-layer">
+                  Container Runtime: containerd Engine Layer
+                </div>
+                
+                <!-- Pods -->
+                <div class="gke-pods-area">
+                  <div class="pods-header"><i class="fa-solid fa-cubes"></i> Containerized Pods (Kubernetes Workloads)</div>
+                  <div class="pods-flex">
+                    <div class="gke-pod-bubble">
+                      <div class="pod-title">Pod 1</div>
+                      <div class="pod-container text-blue">web-frontend</div>
+                    </div>
+                    <div class="gke-pod-bubble">
+                      <div class="pod-title">Pod 2</div>
+                      <div class="pod-container text-green">python-api</div>
+                    </div>
+                    <div class="gke-pod-bubble">
+                      <div class="pod-title">Pod 3</div>
+                      <div class="pod-container text-purple">auth-service</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Hardware Base -->
+          <div class="gke-hardware-layer">
+            <div class="gke-hardware-box">
+              <i class="fa-solid fa-microchip"></i>
+              <span><strong>Physical Host Server Infrastructure:</strong> Managed GCE Compute Nodes, Google Hypervisor, CPUs, RAM, and Global SD-Network Mesh (Autopilot hides GCE VMs from Console).</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "serverless-topics") {
+      return `
+        <div class="syl-visual-serverless">
+          <div class="visual-header-sub"><i class="fa-solid fa-bolt text-purple"></i> Serverless Deployment Selection Matrix</div>
+          <div class="serverless-matrix-grid">
+            <div class="sless-card">
+              <div class="sless-badge badge-blue">FaaS</div>
+              <h3>Cloud Functions</h3>
+              <div class="sless-use"><strong>Ideal for:</strong> Lightweight event-driven processing code snippets.</div>
+              <ul class="sless-details">
+                <li>Triggered by GCS file uploads, Pub/Sub events, or direct HTTP API requests.</li>
+                <li>Scales down to 0; billed strictly to the nearest millisecond of execution.</li>
+                <li>Completely stateless; local storage restricted to in-memory /tmp mount.</li>
+              </ul>
+            </div>
+            
+            <div class="sless-card">
+              <div class="sless-badge badge-purple">CaaS</div>
+              <h3>Cloud Run</h3>
+              <div class="sless-use"><strong>Ideal for:</strong> Containerized REST APIs, microservices, and static portals.</div>
+              <ul class="sless-details">
+                <li>Runs any language runtime, framework, or utility packaged inside a Docker image.</li>
+                <li>Scales down to 0 on idle; supports up to 250 concurrent requests per container.</li>
+                <li>Billed strictly during active request processing (down to 100ms blocks).</li>
+              </ul>
+            </div>
+            
+            <div class="sless-card">
+              <div class="sless-badge badge-green">PaaS</div>
+              <h3>App Engine (GAE)</h3>
+              <div class="sless-use"><strong>Ideal for:</strong> Traditional code-first monolithic web applications.</div>
+              <ul class="sless-details">
+                <li><strong>Standard:</strong> Sandbox runtimes, scale-to-zero model, restricts direct system writing.</li>
+                <li><strong>Flexible:</strong> Container-based, custom runtimes, minimum of 1 active VM (no scale-to-zero).</li>
+                <li>Includes built-in split-testing traffic division engines.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "file-block-storage") {
+      return `
+        <div class="syl-visual-block-storage">
+          <div class="visual-header-sub"><i class="fa-solid fa-hard-drive text-yellow"></i> Block Storage vs. Shared Network Filesystems</div>
+          <div class="serverless-matrix-grid">
+            <div class="sless-card" style="border-top: 4px solid var(--primary);">
+              <div class="sless-badge badge-blue">Network Block</div>
+              <h3>Persistent Disks</h3>
+              <div class="sless-use"><strong>Scope:</strong> Durable block devices attached network-wise to VMs.</div>
+              <ul class="sless-details">
+                <li>Allocated as boot/data disks. Standard, Balanced, or SSD IOPS options.</li>
+                <li><strong>Online Resize:</strong> Expand disk capacity on-the-fly (requires OS-level partition extension).</li>
+                <li><strong>Multi-Writer:</strong> Attach single PD to multiple VMs concurrently (Read-Only or clustered RW).</li>
+              </ul>
+            </div>
+            
+            <div class="sless-card" style="border-top: 4px solid var(--accent-orange);">
+              <div class="sless-badge badge-orange" style="background: rgba(251, 188, 5, 0.15); color: var(--accent-orange);">Host Block</div>
+              <h3>Local SSDs</h3>
+              <div class="sless-use"><strong>Scope:</strong> Ephemeral high-performance raw physical block drives.</div>
+              <ul class="sless-details">
+                <li>Physically slotted into the host GCE hardware server directly.</li>
+                <li>Delivers extreme IOPS and sub-millisecond latencies for caching or scratch.</li>
+                <li><strong>Warning:</strong> Data is permanently wiped when GCE instance is STOPPED or DELETED.</li>
+              </ul>
+            </div>
+            
+            <div class="sless-card" style="border-top: 4px solid var(--accent-green);">
+              <div class="sless-badge badge-green">Network Shared</div>
+              <h3>Cloud Filestore</h3>
+              <div class="sless-use"><strong>Scope:</strong> Managed NAS shared network directories supporting NFSv3.</div>
+              <ul class="sless-details">
+                <li>POSIX-compliant file locking; mounts concurrently to hundreds of VMs/pods.</li>
+                <li>Ideal for WordPress media sync, legacy app migrations, or shared data folders.</li>
+                <li>Billed directly based on allocated capacity tiers (Basic, High Perf, Enterprise).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "gcs-exhaustive") {
+      return `
+        <div class="syl-visual-gcs">
+          <div class="visual-header-sub"><i class="fa-solid fa-database text-yellow"></i> GCS Storage Classes Lifecycle & Configuration Blueprints</div>
+          <div class="gcs-lifecycle-timeline">
+            <div class="gcs-class-box gcs-hot">
+              <div class="gcs-class-header">Standard</div>
+              <div class="gcs-class-desc">Hot active data, website assets, staging environments</div>
+              <div class="gcs-class-spec">Min Retention: None<br>Retrieval Cost: Free</div>
+            </div>
+            <div class="gcs-lifecycle-arrow"><i class="fa-solid fa-arrow-right-long"></i><span>30 Days</span></div>
+            <div class="gcs-class-box gcs-warm">
+              <div class="gcs-class-header">Nearline</div>
+              <div class="gcs-class-desc">Accessed &lt; once a month, backup schedules</div>
+              <div class="gcs-class-spec">Min Retention: 30 Days<br>Retrieval Cost: Low</div>
+            </div>
+            <div class="gcs-lifecycle-arrow"><i class="fa-solid fa-arrow-right-long"></i><span>90 Days</span></div>
+            <div class="gcs-class-box gcs-cold">
+              <div class="gcs-class-header">Coldline</div>
+              <div class="gcs-class-desc">Accessed &lt; once a quarter, disaster recovery</div>
+              <div class="gcs-class-spec">Min Retention: 90 Days<br>Retrieval Cost: Med</div>
+            </div>
+            <div class="gcs-lifecycle-arrow"><i class="fa-solid fa-arrow-right-long"></i><span>365 Days</span></div>
+            <div class="gcs-class-box gcs-archive">
+              <div class="gcs-class-header">Archive</div>
+              <div class="gcs-class-desc">Regulatory logs, permanent cold archives</div>
+              <div class="gcs-class-spec">Min Retention: 365 Days<br>Retrieval Cost: High</div>
+            </div>
+          </div>
+          
+          <div class="gcs-features-grid">
+            <div class="gcs-feat-card">
+              <i class="fa-solid fa-arrows-spin text-blue"></i>
+              <h4>Lifecycle Actions</h4>
+              <p>Declarative rules auto-downgrading objects or cleaning up old generations after age milestones.</p>
+            </div>
+            <div class="gcs-feat-card">
+              <i class="fa-solid fa-signature text-yellow"></i>
+              <h4>Signed URLs</h4>
+              <p>Cryptographic temporary URL granting secure read/write keys to clients without Google credentials.</p>
+            </div>
+            <div class="gcs-feat-card">
+              <i class="fa-solid fa-clock-rotate-left text-green"></i>
+              <h4>Object Versioning</h4>
+              <p>Keeps history of replaced/deleted files, preserving custom generation IDs to safeguard against deletes.</p>
+            </div>
+            <div class="gcs-feat-card">
+              <i class="fa-solid fa-shield-halved text-red"></i>
+              <h4>Retention Policy</h4>
+              <p>Implements WORM rules (Write Once, Read Many) to freeze buckets for strict compliance timelines.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "db-comparisons") {
+      return `
+        <div class="syl-visual-db">
+          <div class="visual-header-sub"><i class="fa-solid fa-database text-green"></i> GCP Managed Database Selection Architecture</div>
+          <div class="db-decision-grid">
+            <div class="db-card">
+              <div class="db-type-header relational"><i class="fa-solid fa-table"></i> Relational SQL Databases</div>
+              <div class="db-sub-grid">
+                <div class="db-item-card">
+                  <h4>Cloud SQL</h4>
+                  <p>Regional fully-managed PostgreSQL, MySQL, and SQL Server databases up to 64TB.</p>
+                  <div class="db-tag-spec">High Availability: Failover standby VM inside another zone</div>
+                </div>
+                <div class="db-item-card">
+                  <h4>Cloud Spanner</h4>
+                  <p>Enterprise global relational SQL scaling horizontally with synchronous replication.</p>
+                  <div class="db-tag-spec">Availability SLA: 99.999% (highly resilient)</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="db-card">
+              <div class="db-type-header nosql"><i class="fa-solid fa-network-wired"></i> NoSQL Schema-less Databases</div>
+              <div class="db-sub-grid">
+                <div class="db-item-card">
+                  <h4>Firestore</h4>
+                  <p>Stateless serverless JSON document database with real-time sync for client applications.</p>
+                  <div class="db-tag-spec">Ideal for: Mobile profiles and transactional state trees</div>
+                </div>
+                <div class="db-item-card">
+                  <h4>Cloud Bigtable</h4>
+                  <p>Wide-column analytical database processing petabytes of low-latency telemetry clickstreams.</p>
+                  <div class="db-tag-spec">Hotspotting warning: Always design non-sequential row keys</div>
+                </div>
+                <div class="db-item-card">
+                  <h4>Cloud Memorystore</h4>
+                  <p>In-memory Redis/Memcached cache layer for rapid sub-millisecond application responses.</p>
+                  <div class="db-tag-spec">Ideal for: Database cache shields</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "vpc-routing") {
+      return `
+        <div class="syl-visual-vpc">
+          <div class="visual-header-sub"><i class="fa-solid fa-route text-purple"></i> VPC Networking Topologies: Sharing, Peering, & Gateways</div>
+          <div class="vpc-grid-container">
+            <div class="vpc-box">
+              <h3><i class="fa-solid fa-share-nodes text-purple"></i> Shared VPC Scope</h3>
+              <p>A designated <strong>Host Project</strong> provisions the global VPC, subnets, routers, and firewall rules.</p>
+              <p>Granular IAM ties <strong>Service Projects</strong> to subnets, allowing developers to deploy GCE VMs directly while network admins lock down network topology.</p>
+            </div>
+            
+            <div class="vpc-box">
+              <h3><i class="fa-solid fa-arrows-left-right text-blue"></i> VPC Peering Link</h3>
+              <p>Connects two distinct, isolated VPC networks (even across different organizations) using internal private IP routing.</p>
+              <p><strong>Rules:</strong> Non-transitive. Subnet CIDR ranges must NOT overlap, otherwise the peering binding fails.</p>
+            </div>
+            
+            <div class="vpc-box">
+              <h3><i class="fa-solid fa-shield-halved text-green"></i> Private Google Access</h3>
+              <p>A subnet-level toggle enabling GCE VMs hosting <i>only private internal IPs</i> to query Google APIs (GCS, BigQuery) securely.</p>
+              <p><strong>Benefits:</strong> VM network requests are routed internally inside Google's fiber lines, completely avoiding the public internet.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "hybrid-lb") {
+      return `
+        <div class="syl-visual-hybrid">
+          <div class="visual-header-sub"><i class="fa-solid fa-route text-blue"></i> Hybrid Connections & Load Balancing Branches</div>
+          <div class="hybrid-grid">
+            <div class="hybrid-section">
+              <h3><i class="fa-solid fa-network-wired text-blue"></i> Hybrid WAN Connections</h3>
+              <div class="hybrid-card">
+                <strong>Cloud HA VPN (IPSec)</strong>
+                <p>Secure encrypted tunnels routed over public internet using BGP via Cloud Router. Single gateway must host 2 active tunnels across independent public interfaces to hit the <strong>99.99% SLA</strong>.</p>
+              </div>
+              <div class="hybrid-card">
+                <strong>Dedicated Interconnect</strong>
+                <p>Direct physical fiber cable running between client data center and Google edge co-location cages. Available in 10Gbps or 100Gbps lanes, supporting high traffic pipelines.</p>
+              </div>
+            </div>
+            
+            <div class="hybrid-section">
+              <h3><i class="fa-solid fa-shuffle text-purple"></i> Cloud Load Balancing (CLB)</h3>
+              <div class="hybrid-card">
+                <strong>Application LB (Layer 7 HTTP/HTTPS)</strong>
+                <p>Manages HTTP traffic. Exposes a single global IP address, providing content path/host-based routing, edge caching via Cloud CDN, and SSL handshakes.</p>
+              </div>
+              <div class="hybrid-card">
+                <strong>Network LB (Layer 4 TCP/UDP)</strong>
+                <p><strong>Proxy:</strong> Terminates non-HTTP TCP/SSL requests at the nearest edge.<br><strong>Passthrough:</strong> Preserves client header IPs, routing raw high-throughput packets regionally.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "bigdata-pipelines") {
+      return `
+        <div class="syl-visual-bigdata">
+          <div class="visual-header-sub"><i class="fa-solid fa-chart-line text-blue"></i> GCP Big Data Processing: End-to-End Pipeline</div>
+          <div class="bigdata-flow">
+            <div class="bigdata-step">
+              <div class="bigdata-icon"><i class="fa-solid fa-envelope-open-text text-yellow"></i></div>
+              <h4>Ingest</h4>
+              <strong>Cloud Pub/Sub</strong>
+              <p>Serverless event broker ingesting and decoupling real-time stream logs globally.</p>
+            </div>
+            <div class="bigdata-arrow"><i class="fa-solid fa-right-long"></i></div>
+            
+            <div class="bigdata-step">
+              <div class="bigdata-icon"><i class="fa-solid fa-code text-blue"></i></div>
+              <h4>Process & ETL</h4>
+              <strong>Dataflow vs Dataproc</strong>
+              <p><strong>Dataflow:</strong> Serverless stream/batch Apache Beam ETL.<br><strong>Dataproc:</strong> Managed Spark/Hadoop clusters migrating legacy code using Spot VMs.</p>
+            </div>
+            <div class="bigdata-arrow"><i class="fa-solid fa-right-long"></i></div>
+            
+            <div class="bigdata-step">
+              <div class="bigdata-icon"><i class="fa-solid fa-table text-green"></i></div>
+              <h4>Warehousing</h4>
+              <strong>BigQuery SQL</strong>
+              <p>Serverless petabyte-scale analytics. Minimize query costs using table Partitioning and Clustering.</p>
+            </div>
+            <div class="bigdata-arrow"><i class="fa-solid fa-right-long"></i></div>
+            
+            <div class="bigdata-step">
+              <div class="bigdata-icon"><i class="fa-solid fa-chart-pie text-purple"></i></div>
+              <h4>Insights</h4>
+              <strong>Looker Studio</strong>
+              <p>Create visual interactive reports and business intelligence dashboards.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "integration-ops") {
+      return `
+        <div class="syl-visual-integration">
+          <div class="visual-header-sub"><i class="fa-solid fa-sliders text-blue"></i> Pub/Sub Event Broker & Declarative IaC Flow</div>
+          <div class="integration-grid">
+            <div class="integration-box">
+              <h3><i class="fa-solid fa-envelope-open-text text-yellow"></i> Pub/Sub Decoupled Flow</h3>
+              <div class="pubsub-flow-diag">
+                <div class="pub-node pub">Publisher VM (Event Ingest)</div>
+                <div class="pub-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                <div class="pub-node topic">Topic Message Broker</div>
+                <div class="pub-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                <div class="pub-node sub">Subscription: Push (Webhook) vs Pull (Poll)</div>
+                <div class="pub-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                <div class="pub-node subber">Subscriber VM / Cloud Run Workers</div>
+              </div>
+              <p class="diag-note">Messages are retained for up to 7 days. Ordering keys enforce FIFO sequences.</p>
+            </div>
+            
+            <div class="integration-box">
+              <h3><i class="fa-solid fa-cubes text-blue"></i> Infrastructure-as-Code (IaC)</h3>
+              <div class="iac-split">
+                <div class="iac-item">
+                  <strong>Deployment Manager</strong>
+                  <p>Google's native declarative deployment engine. Blueprints are defined in YAML manifests, incorporating Python or Jinja2 template blueprints.</p>
+                </div>
+                <div class="iac-item">
+                  <strong>Config Connector</strong>
+                  <p>Kubernetes operator addon enabling engineers to declare and provision Google Cloud services directly through standard Kubernetes YAML manifests.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "iam-security-deep") {
+      return `
+        <div class="syl-visual-iam">
+          <div class="visual-header-sub"><i class="fa-solid fa-shield-halved text-red"></i> GCP Resource Hierarchy & IAM Policy Bindings</div>
+          <div class="iam-layout">
+            <!-- Resource Hierarchy -->
+            <div class="iam-column hierarchy">
+              <h3>Resource Hierarchy (Policy Inheritance)</h3>
+              <div class="hierarchy-tree">
+                <div class="tree-node org"><i class="fa-solid fa-sitemap text-red"></i> Organization Level</div>
+                <div class="tree-line">|</div>
+                <div class="tree-node folder"><i class="fa-solid fa-folder-open text-yellow"></i> Folders (Departments / Environments)</div>
+                <div class="tree-line">|</div>
+                <div class="tree-node project"><i class="fa-solid fa-square-poll-vertical text-blue"></i> Projects (Resource isolation boundary)</div>
+                <div class="tree-line">|</div>
+                <div class="tree-node resource"><i class="fa-solid fa-cube text-green"></i> Individual Resources (VMs, Buckets, DBs)</div>
+              </div>
+              <p class="diag-note">Permissions inherit downwards. A child resource cannot override an inherited ALLOW policy.</p>
+            </div>
+            
+            <!-- Policy Binding -->
+            <div class="iam-column binding">
+              <h3>IAM Policy Binding Formula</h3>
+              <div class="binding-box">
+                <div class="bind-part text-blue">
+                  <strong>WHO (Member Identity)</strong>
+                  <span>User email, Workspace Group, Service Account, or Domain</span>
+                </div>
+                <div class="bind-plus">+</div>
+                <div class="bind-part text-purple">
+                  <strong>WHAT (Access Role)</strong>
+                  <span>Primitive (Owner/Editor), Predefined (Least privilege), or Custom Roles</span>
+                </div>
+                <div class="bind-equals">=</div>
+                <div class="bind-part text-green">
+                  <strong>IAM Policy Binding</strong>
+                  <span>Applies securely to resource metadata to authorize API requests</span>
+                </div>
+              </div>
+              <div class="vm-sa-security">
+                <strong>VM Machine Access Best Practice:</strong>
+                <p>Attach Service Accounts directly to GCE VMs/Pods and use Application Default Credentials (ADC) to generate tokens. <strong>Never download private JSON keys</strong> to VMs due to leak risks.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "ops-billing") {
+      return `
+        <div class="syl-visual-ops">
+          <div class="visual-header-sub"><i class="fa-solid fa-chart-pie text-green"></i> Ops Suite Log Router Sinks & Billing Export Cycles</div>
+          <div class="ops-billing-grid">
+            <!-- Logging Sinks -->
+            <div class="ops-billing-card">
+              <h3><i class="fa-solid fa-chart-line text-purple"></i> Logging & Agent Routing Sinks</h3>
+              <div class="ops-flow-diagram">
+                <div class="ops-node origin">Compute Engine VM (install Ops Agent for RAM/Disk)</div>
+                <div class="ops-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                <div class="ops-node router">Cloud Log Router Filter Sinks</div>
+                <div class="ops-sinks-grid">
+                  <div class="sink-box"><i class="fa-solid fa-box-archive text-yellow"></i><br><strong>Cloud Storage</strong><br>Cheap 7y archive</div>
+                  <div class="sink-box"><i class="fa-solid fa-database text-blue"></i><br><strong>BigQuery</strong><br>SQL log analytics</div>
+                  <div class="sink-box"><i class="fa-solid fa-envelope text-purple"></i><br><strong>Pub/Sub</strong><br>Alert triggers</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Billing Export -->
+            <div class="ops-billing-card">
+              <h3><i class="fa-solid fa-credit-card text-green"></i> Billing Cost Control Lifecycle</h3>
+              <div class="billing-flow-diagram">
+                <div class="bill-step">
+                  <strong>Central Billing Account</strong>
+                  <span>Assigned to multiple projects to pay for resource usage.</span>
+                </div>
+                <div class="bill-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                <div class="bill-step">
+                  <strong>Budget Alerts</strong>
+                  <span>Budgets send emails at 50%, 90%, 100%. *Does not stop resources unless bound via Pub/Sub to Cloud Functions.*</span>
+                </div>
+                <div class="bill-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+                <div class="bill-step">
+                  <strong>BigQuery Cost Export</strong>
+                  <span>Dumps daily cost usage logs directly to BigQuery for SQL dashboards.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (topicId === "kms-encryption") {
+      return `
+        <div class="syl-visual-kms">
+          <div class="visual-header-sub"><i class="fa-solid fa-key text-red"></i> GCP Cryptographic Key Management & Secret Paradigms</div>
+          <div class="serverless-matrix-grid">
+            <div class="sless-card" style="border-top: 4px solid var(--primary);">
+              <div class="sless-badge badge-blue">GMEK</div>
+              <h3>Google-Managed Keys</h3>
+              <div class="sless-use"><strong>Google Custody:</strong> Default transparent encryption. Zero administrative work.</div>
+              <ul class="sless-details">
+                <li>Google automatically handles key generation, encryption, and quarterly rotation parameters.</li>
+                <li>Keys are stored inside Google's secure operational accounts (not visible to users).</li>
+                <li>Billed at zero key-management overhead.</li>
+              </ul>
+            </div>
+            
+            <div class="sless-card" style="border-top: 4px solid var(--accent-purple);">
+              <div class="sless-badge badge-purple">CMEK</div>
+              <h3>Customer-Managed Keys</h3>
+              <div class="sless-use"><strong>Shared Custody:</strong> Keys reside inside customer-owned KMS Project Key Rings.</div>
+              <ul class="sless-details">
+                <li><strong>Full Control:</strong> Customer manages IAM decrypter roles, manual rotations, and key usage logs.</li>
+                <li>Integrates natively with major services (GCS Buckets, GCE disks, BigQuery).</li>
+                <li>Enables key disablement to freeze database resources instantly.</li>
+              </ul>
+            </div>
+            
+            <div class="sless-card" style="border-top: 4px solid var(--accent-red);">
+              <div class="sless-badge badge-red" style="background: rgba(234, 67, 53, 0.15); color: var(--accent-red);">CSEK</div>
+              <h3>Customer-Supplied Keys</h3>
+              <div class="sless-use"><strong>Customer Custody:</strong> Keys generated and held in on-premises vaults.</div>
+              <ul class="sless-details">
+                <li>Raw key strings are sent directly inside header VM boot parameters or gsutil files.</li>
+                <li>Google uses keys strictly in GCE RAM and **wipes them immediately after operation**.</li>
+                <li><strong>Caution:</strong> If keys are lost, Google cannot decrypt any data assets.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return `<p class="text-secondary" style="font-size: 13px;">Diagram context is being prepared for this domain topic.</p>`;
   }
 
   // ==========================================================================
@@ -658,104 +1351,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Clickable Stats tab-switching navigation
+  document.querySelectorAll(".stat-card.clickable-stat").forEach(card => {
+    card.addEventListener("click", () => {
+      const target = card.getAttribute("data-target");
+      if (target) {
+        switchTab(target);
+      }
+    });
+  });
+
   // ==========================================================================
   // SERVICES TAB: FLIP GRID & VISUAL ARCHITECTURE BOX MAPS
   // ==========================================================================
-  btnServicesGrid.addEventListener("click", () => {
-    state.serviceViewMode = "grid";
-    btnServicesGrid.classList.add("active");
-    btnServicesMap.classList.remove("active");
-    servicesGridEl.classList.remove("hidden");
-    servicesFilterBar.classList.remove("hidden");
-    architectureMapContainer.classList.add("hidden");
-  });
-
-  btnServicesMap.addEventListener("click", () => {
-    state.serviceViewMode = "map";
-    btnServicesMap.classList.add("active");
-    btnServicesGrid.classList.remove("active");
-    servicesGridEl.classList.add("hidden");
-    servicesFilterBar.classList.add("hidden");
-    architectureMapContainer.classList.remove("hidden");
-    renderVisualArchitectureMap();
-  });
-
-  filterBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      filterBtns.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      state.selectedServiceCategory = btn.getAttribute("data-category");
-      renderServicesGrid();
-    });
-  });
-
-  function renderServicesGrid() {
-    servicesGridEl.innerHTML = "";
-    const filteredServices = state.selectedServiceCategory === "all"
-      ? db.services
-      : db.services.filter(s => s.category.toLowerCase() === state.selectedServiceCategory.toLowerCase());
-      
-    if (filteredServices.length === 0) {
-      servicesGridEl.innerHTML = `<div class="no-selection-placeholder" style="grid-column: 1/-1;">No services found for this category.</div>`;
-      return;
-    }
-
-    filteredServices.forEach(srv => {
-      const cardWrapper = document.createElement("div");
-      cardWrapper.className = "service-card-wrapper";
-      const card = document.createElement("div");
-      card.className = "service-card";
-      
-      let categoryIcon = "fa-cloud";
-      if (srv.category === "Compute") categoryIcon = "fa-laptop-code";
-      else if (srv.category === "Storage") categoryIcon = "fa-hard-drive";
-      else if (srv.category === "Database") categoryIcon = "fa-database";
-      else if (srv.category === "Networking") categoryIcon = "fa-route";
-      else if (srv.category === "Analytics") categoryIcon = "fa-chart-pie";
-      else if (srv.category === "Integration") categoryIcon = "fa-shuffle";
-      else if (srv.category === "Management") categoryIcon = "fa-screwdriver-wrench";
-      else if (srv.category === "Security") categoryIcon = "fa-shield-halved";
-      else if (srv.category === "Operations") categoryIcon = "fa-chart-line";
-
-      card.innerHTML = `
-        <div class="card-face card-front">
-          <div class="card-top">
-            <span class="card-category">${srv.category}</span>
-            <i class="fa-solid ${categoryIcon} card-icon"></i>
-          </div>
-          <div>
-            <h3>${srv.name}</h3>
-            <p class="card-description">${srv.description}</p>
-          </div>
-          <span class="card-flip-prompt"><i class="fa-solid fa-arrows-rotate"></i> Flip details</span>
-        </div>
-        <div class="card-face card-back">
-          <div class="card-back-title">
-            <h4>${srv.name}</h4>
-            <span>${srv.category}</span>
-          </div>
-          <ul class="card-features-list">
-            ${srv.keyFeatures.slice(0, 3).map(feat => `<li>${feat}</li>`).join("")}
-          </ul>
-          <div class="card-tips-box">
-            <strong>Pro-Tip:</strong>
-            <p>${srv.examTips[0] || "Remember key configurations for provisioning."}</p>
-          </div>
-          <span class="card-flip-prompt" style="margin-top: 10px;"><i class="fa-solid fa-arrows-rotate"></i> Flip back</span>
-        </div>
-      `;
-
-      card.addEventListener("click", () => card.classList.toggle("flipped"));
-      cardWrapper.appendChild(card);
-      servicesGridEl.appendChild(cardWrapper);
-    });
-  }
-
+  // ==========================================================================
+  // SERVICES TAB: ARCHITECTURE MAP (4-Column Layout with Pop-Up Details Modal)
+  // ==========================================================================
   function renderVisualArchitectureMap() {
     if (!architectureMapContainer) return;
     architectureMapContainer.innerHTML = "";
 
-    // Categories structure of our visual tree box maps
+    // Categories structure of our visual tree box maps (5 columns matching the approved plan)
     const MAP_GROUPS = [
       {
         id: "compute",
@@ -763,7 +1379,7 @@ document.addEventListener("DOMContentLoaded", () => {
         icon: "fa-laptop-code text-blue",
         subs: [
           { title: "Infrastructure (IaaS)", nodes: ["compute-engine"] },
-          { title: "Containers & serverless (CaaS)", nodes: ["gke", "cloud-run"] },
+          { title: "Containers & CaaS", nodes: ["gke", "cloud-run"] },
           { title: "PaaS Hosting", nodes: ["app-engine"] },
           { title: "Event FaaS Runtimes", nodes: ["cloud-functions"] }
         ]
@@ -775,27 +1391,39 @@ document.addEventListener("DOMContentLoaded", () => {
         subs: [
           { title: "Durable Object Store", nodes: ["cloud-storage"] },
           { title: "Block Volumes", nodes: ["persistent-disks", "local-ssds"] },
-          { title: "Shared POSIX Files", nodes: ["cloud-filestore"] }
+          { title: "Shared POSIX Files", nodes: ["cloud-filestore"] },
+          { title: "Integration Services", nodes: ["pubsub"] }
         ]
       },
       {
         id: "database",
-        title: "Database Engines & Cache",
+        title: "Databases & Big Data",
         icon: "fa-database text-green",
         subs: [
           { title: "Relational (SQL)", nodes: ["cloud-sql", "cloud-spanner"] },
-          { title: "Non-Relational (NoSQL)", nodes: ["firestore", "cloud-bigtable"] },
-          { title: "In-Memory Caches", nodes: ["memorystore"] }
+          { title: "Non-Relational (NoSQL)", nodes: ["firestore", "cloud-bigtable", "memorystore"] },
+          { title: "Big Data Analytics", nodes: ["cloud-dataflow", "cloud-dataproc", "bigquery"] }
         ]
       },
       {
         id: "networking",
-        title: "Core VPC & Edge Network",
+        title: "VPC Core & Edge Network",
         icon: "fa-route text-purple",
         subs: [
           { title: "Foundations & Routing", nodes: ["vpc", "vpc-peering", "shared-vpc"] },
           { title: "Hybrid Connectors", nodes: ["cloud-vpn", "cloud-interconnect"] },
           { title: "Edge & Delivery", nodes: ["cloud-load-balancing", "cloud-dns"] }
+        ]
+      },
+      {
+        id: "governance",
+        title: "Access, Security & Encryption, Operations & Gov",
+        icon: "fa-shield-halved text-red",
+        subs: [
+          { title: "Access & Identity (IAM)", nodes: ["iam", "service-accounts"] },
+          { title: "Security & Encryption", nodes: ["cloud-kms"] },
+          { title: "Operations Management", nodes: ["cloud-operations", "pricing-calculator"] },
+          { title: "Infrastructure Governance", nodes: ["deployment-manager", "cloud-foundation-toolkit", "cloud-marketplace"] }
         ]
       }
     ];
@@ -815,9 +1443,21 @@ document.addEventListener("DOMContentLoaded", () => {
               ${sub.nodes.map(nId => {
                 const srv = db.services.find(s => s.id === nId);
                 if (!srv) return "";
+                
+                let categoryIcon = "fa-circle-play";
+                if (srv.category === "Compute") categoryIcon = "fa-laptop-code";
+                else if (srv.category === "Storage") categoryIcon = "fa-hard-drive";
+                else if (srv.category === "Database") categoryIcon = "fa-database";
+                else if (srv.category === "Networking") categoryIcon = "fa-route";
+                else if (srv.category === "Analytics") categoryIcon = "fa-chart-pie";
+                else if (srv.category === "Integration") categoryIcon = "fa-shuffle";
+                else if (srv.category === "Management") categoryIcon = "fa-screwdriver-wrench";
+                else if (srv.category === "Security") categoryIcon = "fa-shield-halved";
+                else if (srv.category === "Operations") categoryIcon = "fa-chart-line";
+
                 return `
                   <button class="map-service-node" data-id="${nId}">
-                    <i class="fa-solid fa-circle-play"></i>
+                    <i class="fa-solid ${categoryIcon}"></i>
                     <strong>${srv.name.split(" (")[0]}</strong>
                   </button>
                 `;
@@ -827,7 +1467,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      // Modal Drawer Popup listener
+      // Modal Details Drawer listener
       box.querySelectorAll(".map-service-node").forEach(btn => {
         btn.addEventListener("click", () => {
           const srvId = btn.getAttribute("data-id");
@@ -841,12 +1481,108 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showServiceMapModal(srv) {
+    if (!serviceMapModal || !serviceMapModalBody) return;
+
+    let lbFlowchartHtml = "";
+    if (srv.id === "cloud-load-balancing") {
+      lbFlowchartHtml = `
+        <div style="margin-bottom:25px;">
+          <h4 style="font-size:14px; font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:8px;"><i class="fa-solid fa-sitemap text-purple" style="color:var(--accent-purple);"></i> Decision Flowchart Map</h4>
+          <p style="font-size:11px; color:var(--text-secondary); margin-bottom:12px;">Trace your exam scenario path through Layer 7 (HTTP/S) vs Layer 4 (TCP/UDP) protocols: </p>
+          <div class="lb-flowchart-container">
+            <div class="lb-branches">
+              
+              <!-- BRANCH 1: APPLICATION L7 LOAD BALANCER -->
+              <div class="lb-branch">
+                <div class="lb-branch-title l7">Application LB (Layer 7 HTTP/S)</div>
+                
+                <!-- Row 1: External vs Internal -->
+                <div class="lb-row" style="margin-top:10px;">
+                  <div class="lb-node orange"><strong>External</strong><span>Public Client Traffic</span></div>
+                  <div class="lb-node orange"><strong>Internal</strong><span>Private VPC Traffic</span></div>
+                </div>
+                
+                <div class="lb-connector">⬇</div>
+                
+                <!-- Row 2: Global/Regional vs Regional/Cross-Region -->
+                <div class="lb-row">
+                  <div class="lb-node green"><strong>Global</strong><span>Global Routing</span></div>
+                  <div class="lb-node green"><strong>Regional</strong><span>Single Region</span></div>
+                  <div class="lb-node green"><strong>Regional</strong><span>Single Region</span></div>
+                  <div class="lb-node green"><strong>Cross-region</strong><span>Multi-region Private</span></div>
+                </div>
+                
+                <div class="lb-connector">⬇</div>
+                
+                <!-- Row 3: Final Load Balancer Products -->
+                <div class="lb-row">
+                  <div class="lb-final-node" title="Terminates HTTP/S at Edge globally">Global external Application LB</div>
+                  <div class="lb-final-node" title="Terminates HTTP/S in single region">Regional external Application LB</div>
+                  <div class="lb-final-node" title="Internal proxy in single region">Regional internal Application LB</div>
+                  <div class="lb-final-node" title="Internal proxy across regions">Cross-region internal Application LB</div>
+                </div>
+              </div>
+              
+              <!-- BRANCH 2: NETWORK L4 LOAD BALANCER -->
+              <div class="lb-branch">
+                <div class="lb-branch-title l4">Network LB (Layer 4 TCP/UDP)</div>
+                
+                <!-- Row 1: Proxy vs Passthrough -->
+                <div class="lb-row" style="margin-top:10px;">
+                  <div class="lb-node purple"><strong>Proxy</strong><span>Terminates Client SSL/TCP</span></div>
+                  <div class="lb-node purple"><strong>Passthrough</strong><span>Preserves Client IP Packets</span></div>
+                </div>
+                
+                <div class="lb-connector">⬇</div>
+                
+                <!-- Row 2: Proxy Ext/Int vs Passthrough Ext/Int -->
+                <div class="lb-row">
+                  <div class="lb-node orange"><strong>External</strong><span>Public Proxy</span></div>
+                  <div class="lb-node orange"><strong>Internal</strong><span>Private Proxy</span></div>
+                  <div class="lb-node orange"><strong>External</strong><span>Public Direct</span></div>
+                  <div class="lb-node orange"><strong>Internal</strong><span>Private Direct</span></div>
+                </div>
+                
+                <div class="lb-connector">⬇</div>
+                
+                <!-- Row 3: Global/Regional Decisions -->
+                <div class="lb-row">
+                  <div class="lb-node green"><strong>Global / Regional</strong><span>TCP/TLS Proxy</span></div>
+                  <div class="lb-node green"><strong>Regional / Cross-Reg</strong><span>Internal TCP Proxy</span></div>
+                  <div class="lb-node green"><strong>Regional</strong><span>L4 External Passthrough</span></div>
+                  <div class="lb-node green"><strong>Regional</strong><span>L4 Internal Passthrough</span></div>
+                </div>
+                
+                <div class="lb-connector">⬇</div>
+                
+                <!-- Row 4: Final Products -->
+                <div class="lb-row">
+                  <div class="lb-final-node" title="Proxy external TCP/TLS globally/regionally">Global/Regional external proxy Network LB</div>
+                  <div class="lb-final-node" title="Proxy internal TCP/TLS regionally/cross-region">Regional/Cross-region internal proxy Network LB</div>
+                  <div class="lb-final-node" title="Direct external TCP/UDP regionally">Regional external passthrough Network LB</div>
+                  <div class="lb-final-node" title="Direct internal TCP/UDP regionally">Regional internal passthrough Network LB</div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     serviceMapModalBody.innerHTML = `
       <div style="border-bottom: 1px solid var(--border-color); padding-bottom:15px; margin-bottom: 20px;">
         <span class="category-pill">${srv.category} Architecture</span>
         <h2 style="font-size:24px; margin-top:8px;">${srv.name}</h2>
-        <p style="font-size:13px; color:var(--text-secondary); margin-top:8px;">${srv.description}</p>
+        <p style="font-size:13px; color:var(--text-secondary); margin-top:8px; margin-bottom:12px;">${srv.description}</p>
+        ${srv.docLink ? `
+          <a href="${srv.docLink}" target="_blank" class="btn btn-secondary btn-small" style="font-size:11px; padding: 6px 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 10px;"></i> Know More (Official Documentation)
+          </a>
+        ` : ""}
       </div>
+
+      ${lbFlowchartHtml}
 
       <div style="margin-bottom:20px;">
         <h4 style="font-size:14px; font-weight:700; margin-bottom:8px;"><i class="fa-solid fa-list-check text-blue"></i> Technical Specifications</h4>
@@ -877,7 +1613,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       <div>
         <h4 style="font-size:13px; font-weight:700; margin-bottom:8px;"><i class="fa-solid fa-terminal text-green"></i> Provisioning Commands</h4>
-        ${srv.cliCommands.length > 0 ? srv.cliCommands.map(cmd => `
+        ${srv.cliCommands && srv.cliCommands.length > 0 ? srv.cliCommands.map(cmd => `
           <div class="code-clipboard-block" style="margin-top:6px;">
             <div class="code-header" style="padding:6px 12px; font-size:10px;">
               <span>${cmd.desc}</span>
@@ -902,10 +1638,16 @@ document.addEventListener("DOMContentLoaded", () => {
     serviceMapModal.classList.remove("hidden");
   }
 
-  btnCloseMapModal.addEventListener("click", () => serviceMapModal.classList.add("hidden"));
-  serviceMapModal.addEventListener("click", (e) => {
-    if (e.target === serviceMapModal) serviceMapModal.classList.add("hidden");
-  });
+  // Close modal bindings
+  if (btnCloseMapModal) {
+    btnCloseMapModal.addEventListener("click", () => serviceMapModal.classList.add("hidden"));
+  }
+  if (serviceMapModal) {
+    serviceMapModal.addEventListener("click", (e) => {
+      if (e.target === serviceMapModal) serviceMapModal.classList.add("hidden");
+    });
+  }
+
 
   // ==========================================================================
   // DECISION MATRIX WIZARD - 6 ADVANCED TOPICS
@@ -1225,16 +1967,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Bind link to catalog card
     document.getElementById("wizard-goto-catalog").onclick = () => {
-      state.selectedServiceCategory = "all";
       switchTab("services");
       setTimeout(() => {
-        const cards = document.querySelectorAll(".service-card");
-        cards.forEach(c => {
-          if (c.querySelector("h3").innerText.toLowerCase() === srv.name.toLowerCase()) {
-            c.scrollIntoView({ behavior: "smooth", block: "center" });
-            c.classList.add("flipped");
-          }
-        });
+        showServiceMapModal(srv);
       }, 100);
     };
 
@@ -1730,134 +2465,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==========================================================================
   // GLOBAL SEARCH & INDEXING SYSTEM
   // ==========================================================================
-  const searchInput = document.getElementById("global-search");
-  const searchDropdown = document.getElementById("search-results-dropdown");
-
-  searchInput.addEventListener("input", () => {
-    const query = searchInput.value.toLowerCase().trim();
-    if (!query) {
-      searchDropdown.classList.add("hidden");
-      return;
-    }
-
-    const results = [];
-
-    // Search Category 1: Services
-    db.services.forEach(srv => {
-      if (srv.name.toLowerCase().includes(query) || srv.description.toLowerCase().includes(query)) {
-        results.push({
-          type: "services",
-          title: srv.name,
-          category: srv.category,
-          snippet: srv.description,
-          action: () => {
-            state.selectedServiceCategory = "all";
-            switchTab("services");
-            setTimeout(() => {
-              if (state.serviceViewMode === "map") {
-                showServiceMapModal(srv);
-              } else {
-                const cards = document.querySelectorAll(".service-card");
-                cards.forEach(c => {
-                  if (c.querySelector("h3").innerText.toLowerCase() === srv.name.toLowerCase()) {
-                    c.scrollIntoView({ behavior: "smooth", block: "center" });
-                    c.classList.add("flipped");
-                  }
-                });
-              }
-            }, 100);
-          }
-        });
-      }
-    });
-
-    // Search Category 2: Syllabus Topics
-    db.syllabus.forEach(dom => {
-      dom.topics.forEach(top => {
-        if (top.title.toLowerCase().includes(query) || top.summary.toLowerCase().includes(query)) {
-          results.push({
-            type: "syllabus",
-            title: top.title,
-            category: "Study Topic",
-            snippet: top.summary.substring(0, 80) + "...",
-            action: () => {
-              state.activeDomainId = dom.id;
-              state.activeTopicId = top.id;
-              switchTab("syllabus");
-              setTimeout(() => {
-                renderActiveTopicDetails(top, dom);
-              }, 100);
-            }
-          });
-        }
-      });
-    });
-
-    // Search Category 3: CLI Commands list
-    db.commands.forEach(cmd => {
-      if (cmd.title.toLowerCase().includes(query) || cmd.command.toLowerCase().includes(query) || cmd.description.toLowerCase().includes(query)) {
-        results.push({
-          type: "commands",
-          title: cmd.title,
-          category: "CLI: " + cmd.category,
-          snippet: cmd.command,
-          action: () => {
-            state.activeCommandCategory = cmd.category;
-            switchTab("commands");
-            setTimeout(() => {
-              const cards = document.querySelectorAll(".command-card");
-              cards.forEach(c => {
-                if (c.querySelector("h4").innerText.toLowerCase() === cmd.title.toLowerCase()) {
-                  c.scrollIntoView({ behavior: "smooth", block: "center" });
-                  c.style.borderColor = "var(--primary)";
-                  setTimeout(() => c.style.borderColor = "var(--border-color)", 2000);
-                }
-              });
-            }, 100);
-          }
-        });
-      }
-    });
-
-    renderSearchResults(results.slice(0, 8));
-  });
-
-  function renderSearchResults(results) {
-    if (results.length === 0) {
-      searchDropdown.innerHTML = `<div style="padding: 16px; color: var(--text-muted); font-size:13px; text-align:center;">No match found. Try 'IAM', 'gcloud', or 'VPC'</div>`;
-      searchDropdown.classList.remove("hidden");
-      return;
-    }
-
-    searchDropdown.innerHTML = "";
-    results.forEach(res => {
-      const item = document.createElement("div");
-      item.className = "search-result-item";
-      item.innerHTML = `
-        <div class="search-result-title">${res.title}</div>
-        <div class="search-result-meta">
-          <span class="search-result-category ${res.type}">${res.category}</span>
-          <span class="search-result-snippet">${res.snippet}</span>
-        </div>
-      `;
-      
-      item.addEventListener("click", () => {
-        res.action();
-        searchInput.value = "";
-        searchDropdown.classList.add("hidden");
-      });
-      
-      searchDropdown.appendChild(item);
-    });
-    
-    searchDropdown.classList.remove("hidden");
-  }
-
-  // Close dropdown on click outside
-  document.addEventListener("click", (e) => {
-    if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
-      searchDropdown.classList.add("hidden");
-    }
-  });
+  // Global search excised by request.
 
 });

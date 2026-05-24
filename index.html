@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GCP ACE Initiative Study & Interactive Guide</title>
+  <title>GCP ACE Study Accelerator</title>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +27,15 @@
         </div>
         <div class="brand-text">
           <h2>GCP ACE</h2>
-          <span>Initiative Study Guide</span>
+          <span>Study Accelerator</span>
+        </div>
+      </div>
+      
+      <div class="user-badge">
+        <div class="avatar">ACE</div>
+        <div class="user-info">
+          <h4>Cloud Candidate</h4>
+          <p>Exam Ready: <span id="readiness-pct">0%</span></p>
         </div>
       </div>
       
@@ -50,17 +58,10 @@
         <button class="nav-item" data-tab="quiz">
           <i class="fa-solid fa-graduation-cap"></i> <span>Practice Quiz</span>
         </button>
+        <button class="nav-item" data-tab="guide">
+          <i class="fa-solid fa-file-lines"></i> <span>Exam Guide</span>
+        </button>
       </nav>
-      
-      <div class="sidebar-footer">
-        <div class="user-badge">
-          <div class="avatar">ACE</div>
-          <div class="user-info">
-            <h4>Cloud Candidate</h4>
-            <p>Exam Ready: <span id="readiness-pct">0%</span></p>
-          </div>
-        </div>
-      </div>
     </aside>
     
     <!-- Main Content Area -->
@@ -68,19 +69,14 @@
       
       <!-- Top Header -->
       <header class="app-header">
-        <div class="header-search">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="global-search" placeholder="Search topics, services, or CLI commands (e.g. gcloud, IAM, storage)...">
-          <div id="search-results-dropdown" class="search-dropdown hidden"></div>
+        <div></div>
+        <div class="header-title-center">
+          <h1>GCP ACE Study Accelerator</h1>
         </div>
-        
         <div class="header-actions">
           <button id="theme-toggle" class="header-btn" title="Toggle Light/Dark Theme">
             <i class="fa-solid fa-sun"></i>
           </button>
-          <a href="https://github.com" target="_blank" class="header-btn github-btn" title="Publish to GitHub">
-            <i class="fa-brands fa-github"></i>
-          </a>
         </div>
       </header>
       
@@ -100,28 +96,28 @@
           </div>
           
           <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card clickable-stat" data-target="syllabus">
               <div class="stat-icon purple"><i class="fa-solid fa-book"></i></div>
               <div class="stat-info">
                 <h3>5 Domains</h3>
                 <p>Fully Indexed Topics</p>
               </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable-stat" data-target="services">
               <div class="stat-icon blue"><i class="fa-solid fa-cubes"></i></div>
               <div class="stat-info">
                 <h3><span id="stat-services-count">0</span> Services</h3>
                 <p>GCP Catalog Cards</p>
               </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable-stat" data-target="commands">
               <div class="stat-icon green"><i class="fa-solid fa-terminal"></i></div>
               <div class="stat-info">
                 <h3><span id="stat-commands-count">0</span> Commands</h3>
                 <p>Interactive CLI Scripts</p>
               </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable-stat" data-target="quiz">
               <div class="stat-icon orange"><i class="fa-solid fa-question"></i></div>
               <div class="stat-info">
                 <h3><span id="stat-quiz-count">0</span> Scenarios</h3>
@@ -131,7 +127,7 @@
           </div>
           
           <div class="dashboard-layouts">
-            <!-- Left Panel: Quick Actions & Progress -->
+            <!-- Left Panel: Readiness & Cheat Codes -->
             <div class="dashboard-panel-left">
               <div class="glass-card progress-card">
                 <h3>Your Readiness Tracker</h3>
@@ -168,31 +164,10 @@
                   <!-- Dynamically populated in app.js -->
                 </div>
               </div>
-              
-              <!-- Interactive Flashcard deck -->
-              <div class="glass-card flashcard-card">
-                <div class="promo-header">
-                  <i class="fa-solid fa-clone"></i>
-                  <span>Concept Booster Flashcards</span>
-                </div>
-                <h3>Daily Exam Pro-Tip Drills</h3>
-                <p>Click the card to reveal the core concept. Mark them to track your retention progress.</p>
-                <div class="flashcard-deck-wrapper">
-                  <div class="flashcard-deck" id="flashcard-deck-container">
-                    <!-- Loaded dynamically in app.js -->
-                  </div>
-                </div>
-                <div class="flashcard-controls">
-                  <button class="btn btn-secondary" id="btn-flash-review"><i class="fa-solid fa-rotate-left"></i> Review Later</button>
-                  <button class="btn btn-primary" id="btn-flash-master"><i class="fa-solid fa-check-double"></i> Mastered</button>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Right Panel: Key ACE Exam Tips -->
-            <div class="dashboard-panel-right">
-              <div class="glass-card tips-card">
-                <h3><i class="fa-solid fa-lightbulb text-yellow"></i> Critical ACE Exam Cheat-Codes</h3>
+
+              <!-- Moved: Key ACE Exam Cheat-Codes at the bottom of Left Column -->
+              <div class="glass-card tips-card" style="margin-top: 30px;">
+                <h3><i class="fa-solid fa-lightbulb text-yellow"></i> 1-Min Glimpse of Major GCP Services</h3>
                 <ul class="tips-list">
                   <li>
                     <span class="tip-tag storage">STORAGE</span>
@@ -215,6 +190,27 @@
                     <strong>bq mk</strong> creates BigQuery datasets/tables, while <strong>gsutil mb</strong> (or <strong>gcloud storage buckets create</strong>) creates GCS buckets.
                   </li>
                 </ul>
+              </div>
+            </div>
+            
+            <!-- Right Panel: 1-Min Glimpse & Timeline Activity -->
+            <div class="dashboard-panel-right">
+              <!-- Swapped: Concept Booster Flashcards Renamed in Top Right -->
+              <div class="glass-card flashcard-card">
+                <div class="promo-header">
+                  <i class="fa-solid fa-clone text-orange"></i>
+                  <span>Concept Booster Flashcard Drills</span>
+                </div>
+                <p>Click the card to reveal the core concept. Mark them as mastered to track your retention progress.</p>
+                <div class="flashcard-deck-wrapper">
+                  <div class="flashcard-deck" id="flashcard-deck-container">
+                    <!-- Loaded dynamically in app.js -->
+                  </div>
+                </div>
+                <div class="flashcard-controls">
+                  <button class="btn btn-secondary" id="btn-flash-review"><i class="fa-solid fa-rotate-left"></i> Review Later</button>
+                  <button class="btn btn-primary" id="btn-flash-master"><i class="fa-solid fa-check-double"></i> Mastered</button>
+                </div>
               </div>
 
               <!-- Recent Activity Log Timeline -->
@@ -273,44 +269,13 @@
           <div class="section-title">
             <div>
               <h1>Major GCP Services Directory</h1>
-              <p>Flip and explore crucial GCP services, core features, scenarios, and pro tips optimized for ACE questions.</p>
-            </div>
-            <div class="view-toggle-bar">
-              <button class="toggle-view-btn active" id="btn-services-grid"><i class="fa-solid fa-grip-vertical"></i> Flip-Card Grid</button>
-              <button class="toggle-view-btn" id="btn-services-map"><i class="fa-solid fa-diagram-project"></i> Visual Architecture Map</button>
+              <p>Explore crucial GCP services organized hierarchically in their visual boxes. Click any card in the map to flip it directly and explore specs, pro tips, and When to Use rules.</p>
             </div>
           </div>
           
-          <div class="filter-bar" id="services-filter-bar">
-            <button class="filter-btn active" data-category="all">All Services</button>
-            <button class="filter-btn" data-category="Compute">Compute</button>
-            <button class="filter-btn" data-category="Storage">Storage</button>
-            <button class="filter-btn" data-category="Database">Databases</button>
-            <button class="filter-btn" data-category="Networking">Networking</button>
-            <button class="filter-btn" data-category="Analytics">Analytics & Big Data</button>
-            <button class="filter-btn" data-category="Integration">Integration</button>
-            <button class="filter-btn" data-category="Management">Management</button>
-            <button class="filter-btn" data-category="Security">Security</button>
-            <button class="filter-btn" data-category="Operations">Operations</button>
-          </div>
-          
-          <div class="services-grid" id="services-grid-container">
-            <!-- Dynamically populated service cards -->
-          </div>
-
-          <!-- Hierarchical Box Architecture Map -->
-          <div class="architecture-map-container hidden" id="architecture-map-container">
-            <!-- Rendered dynamically in app.js -->
-          </div>
-
-          <!-- Service Map Modal Drawer Overlay -->
-          <div class="service-modal-overlay hidden" id="service-map-modal">
-            <div class="service-modal-content glass-card">
-              <button class="modal-close-btn" id="btn-close-map-modal"><i class="fa-solid fa-xmark"></i></button>
-              <div id="service-map-modal-body">
-                <!-- Loaded dynamically in app.js -->
-              </div>
-            </div>
+          <!-- Hierarchical Box Architecture Map (Sole main view) -->
+          <div class="architecture-map-container" id="architecture-map-container">
+            <!-- Rendered dynamically as flippable cards in app.js -->
           </div>
         </section>
         
@@ -647,15 +612,168 @@
                 <button class="btn btn-secondary" id="quiz-goto-syllabus-btn"><i class="fa-solid fa-book"></i> Review Syllabus</button>
               </div>
             </div>
+                      </div>
+          </section>
+          
+            <!-- ================= TAB: EXAM GUIDE ================= -->
+            <section id="tab-guide" class="tab-pane">
+              <div class="welcome-banner guide-banner">
+                <div class="welcome-text">
+                  <h1>Associate Cloud Engineer Exam Guide</h1>
+                  <p>An Associate Cloud Engineer deploys applications, monitors operations, and manages enterprise identities and security. Explore key concepts, community-sourced domain weightages, Webassessor registrations, and elite exam tips.</p>
+                </div>
+                <div class="welcome-badge">
+                  <i class="fa-solid fa-book-bookmark"></i>
+                </div>
+              </div>
+  
+              <div class="guide-grid">
+                <!-- Left Column: Specs, Scheduling, and Links -->
+                <div class="guide-col-left">
+                  <div class="glass-card guide-card">
+                    <h3><i class="fa-solid fa-circle-info text-blue"></i> Official Exam Parameters</h3>
+                    <div class="guide-parameters-list" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+                      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-size: 13px;">
+                        <span>Exam Price</span>
+                        <strong>$125 USD (plus taxes)</strong>
+                      </div>
+                      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-size: 13px;">
+                        <span>Duration</span>
+                        <strong>120 Minutes (2 Hours)</strong>
+                      </div>
+                      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-size: 13px;">
+                        <span>Question Count</span>
+                        <strong>50-60 Questions</strong>
+                      </div>
+                      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-size: 13px;">
+                        <span>Format</span>
+                        <strong>Multiple Choice & Select</strong>
+                      </div>
+                      <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; font-size: 13px;">
+                        <span>Prerequisites</span>
+                        <strong>None (Hands-on recommended)</strong>
+                      </div>
+                    </div>
+                    <div class="guide-actions" style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;">
+                      <a href="https://www.webassessor.com/googlecloud/" target="_blank" class="btn btn-primary" style="justify-content: center; text-decoration: none; background: var(--primary-gradient);">
+                        Schedule Exam via Webassessor <i class="fa-solid fa-calendar-check"></i>
+                      </a>
+                      <a href="https://cloud.google.com/learn/certification/sample-questions/associate-cloud-engineer" target="_blank" class="btn btn-secondary" style="justify-content: center; text-decoration: none;">
+                        Official Practice Questions <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                      </a>
+                    </div>
+                  </div>
+  
+                  <div class="glass-card guide-card" style="margin-top: 30px;">
+                    <h3><i class="fa-solid fa-award text-yellow"></i> Consensus Exam Tips & Strategy</h3>
+                    <ul class="tips-list" style="margin-top: 15px; font-size: 12px; list-style: none;">
+                      <li style="margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+                        <strong>Identify command prefixes:</strong> Remember `bq mk` creates BigQuery tables/datasets, `gsutil mb` or `gcloud storage` creates buckets, and `gcloud compute` manages VMs.
+                      </li>
+                      <li style="margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+                        <strong>Always choose least privilege:</strong> For any IAM question, select the predefined role that offers the absolute narrowest permissions required. Never grant Owner/Editor roles if Predefined exists.
+                      </li>
+                      <li style="margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+                        <strong>Autoscale and heal MIGs:</strong> Managed Instance Groups rely on *Instance Templates*. Startup scripts automatically install operations packages upon boot.
+                      </li>
+                      <li style="margin-bottom:12px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+                        <strong>Understand firewall states:</strong> VPC Firewalls are stateful. Incoming Ingress rules automatically permit outgoing responses, while outgoing Egress rules automatically permit incoming requests.
+                      </li>
+                      <li>
+                        <strong>Billing best practices:</strong> Set budgets and alerts at the billing level. Use exports to BigQuery for extensive querying and Looker Studio dashboards.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+  
+                <!-- Right Column: Weights & Syllabus Weightages -->
+                <div class="guide-col-right">
+                  <div class="glass-card guide-card">
+                    <h3><i class="fa-solid fa-chart-bar text-green"></i> Reddit & Internet Consensus Weightages</h3>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 6px; margin-bottom: 20px;">
+                      Aggregated feedback from r/googlecloud candidates who passed the ACE certification reveals a heavy emphasis on identity controls, container management, and core networking:
+                    </p>
+  
+                    <div class="weight-track-container" style="display: flex; flex-direction: column; gap: 20px;">
+                      <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                          <strong>1. IAM Security & Access Policy</strong>
+                          <span class="weight-pill purple">25% - 30% Focus</span>
+                        </div>
+                        <div class="weight-track">
+                          <div class="weight-fill purple" style="width: 30%;"></div>
+                        </div>
+                        <small style="font-size: 10px; color: var(--text-muted); display: block; margin-top: 4px;">Service accounts, Project folders, custom roles, and serviceAccountUser binds.</small>
+                      </div>
+  
+                      <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                          <strong>2. Container Orch & Compute Models (GKE, Run)</strong>
+                          <span class="weight-pill blue">20% - 25% Focus</span>
+                        </div>
+                        <div class="weight-track">
+                          <div class="weight-fill blue" style="width: 25%;"></div>
+                        </div>
+                        <small style="font-size: 10px; color: var(--text-muted); display: block; margin-top: 4px;">Autopilot vs Standard pools, HPA Pod configurations, and serverless Cloud Run APIs.</small>
+                      </div>
+  
+                      <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                          <strong>3. Storage & Relational Databases</strong>
+                          <span class="weight-pill green">20% - 25% Focus</span>
+                        </div>
+                        <div class="weight-track">
+                          <div class="weight-fill green" style="width: 22%;"></div>
+                        </div>
+                        <small style="font-size: 10px; color: var(--text-muted); display: block; margin-top: 4px;">GCS retention classes (Nearline/Coldline), Spanner synchronous writes, and SQL HA standby pools.</small>
+                      </div>
+  
+                      <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                          <strong>4. VPC Core Networks & Routing</strong>
+                          <span class="weight-pill orange">15% - 20% Focus</span>
+                        </div>
+                        <div class="weight-track">
+                          <div class="weight-fill orange" style="width: 18%;"></div>
+                        </div>
+                        <small style="font-size: 10px; color: var(--text-muted); display: block; margin-top: 4px;">Stateful firewall rule tags, subnets CIDR, Private Google Access, Peering, and VPN setups.</small>
+                      </div>
+  
+                      <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;">
+                          <strong>5. Operations monitoring & Custom billing</strong>
+                          <span class="weight-pill yellow">10% - 15% Focus</span>
+                        </div>
+                        <div class="weight-track">
+                          <div class="weight-fill yellow" style="width: 12%;"></div>
+                        </div>
+                        <small style="font-size: 10px; color: var(--text-muted); display: block; margin-top: 4px;">gcloud CLI script parameters, Log Router sinks, Ops Agent triggers, and budget notifications.</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
             
+            <!-- App Copyright Footer -->
+            <footer class="app-footer">
+              <p>© 2026 GCP ACE Study Accelerator. All Rights Reserved. MIT Licensed.</p>
+            </footer>
           </div>
-        </section>
-        
-      </div>
     </main>
     
   </div>
   
+  <!-- Service Detail Modal (Old architectural map view details) -->
+  <div id="service-map-modal" class="modal-overlay hidden">
+    <div class="modal-content glass-card">
+      <button id="btn-close-map-modal" class="modal-close-btn">&times;</button>
+      <div id="service-map-modal-body">
+        <!-- Loaded dynamically in app.js -->
+      </div>
+    </div>
+  </div>
+
   <!-- Global Toast Notification -->
   <div id="global-toast" class="toast hidden">
     <i class="fa-solid fa-circle-check"></i> <span id="toast-message">Copied to clipboard!</span>

@@ -1,12 +1,13 @@
-// GCP ACE Exam Study Guide Database - Expanded, Interactive and Exhaustive
+// GCP ACE Study Accelerator Database - Expanded, Interactive and Exhaustive
 const GCP_DATABASE = {
   services: [
     // --- COMPUTE SERVICES ---
     {
       id: "compute-engine",
+      docLink: "https://cloud.google.com/compute/docs",
       name: "Google Compute Engine (GCE)",
       category: "Compute",
-      description: "Secure, customizable virtual machines (VMs) running on Google's global infrastructure.",
+      description: "Secure, customizable virtual machines (VMs) running on Google's global infrastructure. VMs can be provisioned as individual instances or scaled automatically via Managed Instance Groups (MIGs) using Instance Templates. GCE supports standard public OS images, custom images (reusable boot disks with pre-installed software), and startup scripts to automatically install packages and initialize services on boot. GCE offers diverse machine families (General Purpose, Compute/Memory/Accelerator Optimized), Spot VMs (ephemeral VMs with up to 91% discount), and persistent block storage options like PDs and local SSDs.",
       keyFeatures: [
         "Predefined & custom machine types (General Purpose, Compute/Memory/Accelerator Optimized)",
         "Persistent Disks (Standard, Balanced, SSD) & ephemeral Local SSDs (ultra high-performance)",
@@ -24,7 +25,7 @@ const GCP_DATABASE = {
         "Static web hosting (use Cloud Storage which requires zero VM maintenance)."
       ],
       cliCommands: [
-        { command: "gcloud compute instances create [VM_NAME] --zone=[ZONE] --machine-type=e2-medium --subnet=[SUBNET]", desc: "Launches a custom virtual machine instance." },
+        { command: "gcloud compute instances create [VM_NAME] --zone=[ZONE] --machine-type=e2-medium --subnet=[SUBNET] --metadata-from-file=startup-script=script.sh", desc: "Launches a custom virtual machine instance with a startup script." },
         { command: "gcloud compute instances stop [VM_NAME] --zone=[ZONE]", desc: "Halts a running GCE instance to stop compute resource billing." }
       ],
       examTips: [
@@ -34,6 +35,7 @@ const GCP_DATABASE = {
     },
     {
       id: "app-engine",
+      docLink: "https://cloud.google.com/appengine/docs",
       name: "Google App Engine (GAE)",
       category: "Compute",
       description: "Fully-managed Platform-as-a-Service (PaaS) to deploy web applications without server overhead.",
@@ -60,9 +62,10 @@ const GCP_DATABASE = {
     },
     {
       id: "gke",
+      docLink: "https://cloud.google.com/kubernetes-engine/docs",
       name: "Google Kubernetes Engine (GKE)",
       category: "Compute",
-      description: "Secured, managed Kubernetes service for deploying, managing, and scaling containerized applications.",
+      description: "Secured, managed Kubernetes service for deploying, managing, and scaling containerized applications. It supports two cluster types: Autopilot (fully managed, charged per running pod) and Standard (user-managed worker node pools, charged per running VM). GKE's cluster architecture consists of a Control Plane (formerly Master node) managing cluster operations (API Server for communication, Scheduler for placing pods, Controller Manager for maintaining states, and etcd as the consistent distributed key-value data store) and Worker Nodes (VMs that run container pods, containing a Kubelet daemon to communicate with the control plane, kube-proxy to route internal service network traffic, and container runtimes like containerd). It also supports Kubernetes objects like Deployments (declarative updates to pods and ReplicaSets) vs ReplicaSets (ensuring a specified number of pod replicas are running at any given time).",
       keyFeatures: [
         "Autopilot mode: Google manages VM nodes, provisioning, security, and cluster scaling; charged per running pod.",
         "Standard mode: Full operational control over underlying VM nodes, custom node pools, and host configs.",
@@ -87,6 +90,7 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-functions",
+      docLink: "https://cloud.google.com/functions/docs",
       name: "Cloud Functions",
       category: "Compute",
       description: "Serverless execution environment for building and connecting single-purpose, event-driven functions.",
@@ -112,6 +116,7 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-run",
+      docLink: "https://cloud.google.com/run/docs",
       name: "Cloud Run",
       category: "Compute",
       description: "Fully managed serverless platform that enables you to run containerized applications directly.",
@@ -139,6 +144,7 @@ const GCP_DATABASE = {
     // --- STORAGE SERVICES ---
     {
       id: "cloud-storage",
+      docLink: "https://cloud.google.com/storage/docs",
       name: "Cloud Storage (GCS)",
       category: "Storage",
       description: "Globally durable, highly scalable, and cost-effective object storage system for unstructured data.",
@@ -166,6 +172,7 @@ const GCP_DATABASE = {
     },
     {
       id: "persistent-disks",
+      docLink: "https://cloud.google.com/compute/docs/disks",
       name: "Persistent Disks (Standard, Balanced, SSD)",
       category: "Storage",
       description: "Durable, high-performance block storage volumes attached directly to Compute Engine VMs.",
@@ -190,6 +197,7 @@ const GCP_DATABASE = {
     },
     {
       id: "local-ssds",
+      docLink: "https://cloud.google.com/compute/docs/disks/local-ssd",
       name: "Local SSDs",
       category: "Storage",
       description: "High-performance, transient physical SSD storage directly attached to the GCE VM host server.",
@@ -212,6 +220,7 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-filestore",
+      docLink: "https://cloud.google.com/filestore/docs",
       name: "Cloud Filestore",
       category: "Storage",
       description: "Fully managed Network Attached Storage (NAS) providing shared POSIX-compliant NFS file systems.",
@@ -238,6 +247,7 @@ const GCP_DATABASE = {
     // --- DATABASE SERVICES ---
     {
       id: "cloud-sql",
+      docLink: "https://cloud.google.com/sql/docs",
       name: "Cloud SQL",
       category: "Database",
       description: "Fully-managed relational database service compatible with MySQL, PostgreSQL, and SQL Server.",
@@ -263,6 +273,7 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-spanner",
+      docLink: "https://cloud.google.com/spanner/docs",
       name: "Cloud Spanner",
       category: "Database",
       description: "Enterprise-grade, globally scalable, strongly consistent relational database service.",
@@ -285,6 +296,7 @@ const GCP_DATABASE = {
     },
     {
       id: "firestore",
+      docLink: "https://cloud.google.com/firestore/docs",
       name: "Firestore",
       category: "Database",
       description: "Highly scalable, serverless NoSQL document database optimized for web, mobile, and IoT apps.",
@@ -308,6 +320,7 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-bigtable",
+      docLink: "https://cloud.google.com/bigtable/docs",
       name: "Cloud Bigtable",
       category: "Database",
       description: "Google's NoSQL wide-column database, optimized for massive low-latency write ingestion.",
@@ -331,6 +344,7 @@ const GCP_DATABASE = {
     },
     {
       id: "memorystore",
+      docLink: "https://cloud.google.com/memorystore/docs",
       name: "Cloud Memorystore (Redis, Memcached)",
       category: "Database",
       description: "Fully managed, in-memory data store service providing sub-millisecond caching layers.",
@@ -354,9 +368,10 @@ const GCP_DATABASE = {
     // --- NETWORKING SERVICES ---
     {
       id: "vpc",
+      docLink: "https://cloud.google.com/vpc/docs",
       name: "Virtual Private Cloud (VPC)",
       category: "Networking",
-      description: "Globally scalable logical network partition for GCP compute resources.",
+      description: "Globally scalable logical network partition for GCP compute resources. VPC networks are global, while Subnets are regional boundaries that define internal IP address spaces using CIDR notation (Classless Inter-Domain Routing). Subnets contain allocated private IP ranges (e.g., 10.0.1.0/24 allows 256 IPs from 10.0.1.0 to 10.0.1.255; 10.128.0.0/20 allows 4,096 IPs). VPC uses stateful Firewall Rules to control traffic flow; rules are categorized as Ingress (filtering incoming connections to instances) and Egress (filtering outgoing connections from instances), matching by protocol (TCP, UDP, ICMP), port, and source/target tags or IP ranges.",
       keyFeatures: [
         "VPC network scope is Global; it spans all available regions.",
         "Subnets are regional boundaries containing allocated IP ranges.",
@@ -375,6 +390,7 @@ const GCP_DATABASE = {
     },
     {
       id: "vpc-peering",
+      docLink: "https://cloud.google.com/vpc/docs/vpc-peering",
       name: "VPC Peering",
       category: "Networking",
       description: "Securely connects two independent VPC networks, enabling direct internal IP communication.",
@@ -396,6 +412,7 @@ const GCP_DATABASE = {
     },
     {
       id: "shared-vpc",
+      docLink: "https://cloud.google.com/vpc/docs/shared-vpc",
       name: "Shared VPC",
       category: "Networking",
       description: "Enables a single host project to share regional subnets with other service projects.",
@@ -416,6 +433,7 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-vpn",
+      docLink: "https://cloud.google.com/network-connectivity/docs/vpn",
       name: "Cloud VPN (HA VPN, Classic)",
       category: "Networking",
       description: "Connects on-premises networks to GCP VPCs securely through encrypted IPSec tunnels.",
@@ -437,6 +455,7 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-interconnect",
+      docLink: "https://cloud.google.com/network-connectivity/docs/interconnect",
       name: "Cloud Interconnect (Dedicated, Partner)",
       category: "Networking",
       description: "Provides high-throughput, low-latency physical fiber links from corporate networks to GCP.",
@@ -458,9 +477,10 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-load-balancing",
+      docLink: "https://cloud.google.com/load-balancing/docs/choosing-load-balancer",
       name: "Cloud Load Balancing",
       category: "Networking",
-      description: "Fully managed, scalable load distribution system to route user traffic to the closest compute resource.",
+      description: "Fully managed load distribution system. Routes traffic to compute resources. CLB is categorized into Application Load Balancer (HTTP/HTTPS, Layer 7) and Network Load Balancer (TCP/UDP/other IP protocols, Layer 4). L7 balancers handle HTTP/HTTPS and can be External (Global/Regional) or Internal (Regional/Cross-region). L4 balancers are categorized as: 1) Proxy: terminates client sessions, can be External (Global/Regional) or Internal (Regional/Cross-region), using TCP/TLS. 2) Passthrough: preserves client IP and routes raw packets directly, can be External (Regional external passthrough Network Load Balancer) or Internal (Regional internal passthrough Network Load Balancer) for TCP/UDP traffic.",
       keyFeatures: [
         "Global Load Balancers (HTTP(S), SSL Proxy, TCP Proxy) using a single external IP.",
         "Regional Load Balancers (Network Load Balancer, Internal Load Balancer).",
@@ -478,6 +498,7 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-dns",
+      docLink: "https://cloud.google.com/dns/docs",
       name: "Cloud DNS",
       category: "Networking",
       description: "Reliable, low-latency, resilient domain name lookup service running on Google's infrastructure.",
@@ -502,6 +523,7 @@ const GCP_DATABASE = {
     // --- ANALYTICS & BIG DATA ---
     {
       id: "bigquery",
+      docLink: "https://cloud.google.com/bigquery/docs",
       name: "BigQuery",
       category: "Analytics",
       description: "Serverless, highly scalable, cost-effective multi-cloud data warehouse designed for business agility.",
@@ -527,6 +549,7 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-dataflow",
+      docLink: "https://cloud.google.com/dataflow/docs",
       name: "Cloud Dataflow",
       category: "Analytics",
       description: "Fully managed serverless data processing service running Apache Beam pipelines.",
@@ -549,6 +572,7 @@ const GCP_DATABASE = {
     },
     {
       id: "cloud-dataproc",
+      docLink: "https://cloud.google.com/dataproc/docs",
       name: "Cloud Dataproc",
       category: "Analytics",
       description: "Managed spark and Hadoop service to run open-source data analytics software clusters.",
@@ -575,6 +599,7 @@ const GCP_DATABASE = {
     // --- INTEGRATION SERVICES ---
     {
       id: "pubsub",
+      docLink: "https://cloud.google.com/pubsub/docs",
       name: "Cloud Pub/Sub",
       category: "Integration",
       description: "Serverless asynchronous messaging service that decouples systems that produce events from systems that process them.",
@@ -602,6 +627,7 @@ const GCP_DATABASE = {
     // --- MANAGEMENT & SECURITY ---
     {
       id: "deployment-manager",
+      docLink: "https://cloud.google.com/deployment-manager/docs",
       name: "Google Cloud Deployment Manager",
       category: "Management",
       description: "Infrastructure-as-Code (IaC) tool that allows you to specify all project resources in declarative templates.",
@@ -624,9 +650,10 @@ const GCP_DATABASE = {
     },
     {
       id: "iam",
+      docLink: "https://cloud.google.com/iam/docs",
       name: "Cloud Identity and Access Management (IAM)",
       category: "Security",
-      description: "Authorizes who (identity) has what permissions (roles) to act on specific resources.",
+      description: "Authorizes who (identity) has what permissions (roles) to act on specific resources. IAM consists of Members (Identities like Google Accounts, Service Accounts, Google Groups, Workspace Domains, or allUsers/allAuthenticatedUsers), Roles (Collections of permissions; can be Primitive like Owner/Editor/Viewer, Predefined like storage.objectAdmin, or Custom created by users), and Policies (Bindings of one or more roles to members, applied at the Organization, Folder, Project, or Resource levels). In contrast to IAM (which manages broad identity-level access across GCP resources), Access Control Lists (ACLs) provide fine-grained, object-level read/write permissions directly on individual items inside Cloud Storage buckets (Legacy/Object ACLs) and should be disabled in favor of uniform bucket-level IAM policies whenever possible.",
       keyFeatures: [
         "Primitive roles (Owner, Editor, Viewer).",
         "Predefined roles: Google-managed roles targeting specific jobs (e.g. roles/storage.objectAdmin).",
@@ -645,6 +672,7 @@ const GCP_DATABASE = {
     },
     {
       id: "service-accounts",
+      docLink: "https://cloud.google.com/iam/docs/service-accounts",
       name: "Service Accounts",
       category: "Security",
       description: "Digital identity representing an application, VM, or service rather than a human user.",
@@ -664,7 +692,36 @@ const GCP_DATABASE = {
       ]
     },
     {
+      id: "cloud-kms",
+      docLink: "https://cloud.google.com/kms/docs",
+      name: "Cloud Key Management Service (Cloud KMS)",
+      category: "Security",
+      description: "Fully managed service that enables you to create, import, and rotate cryptographic keys. Google supports both Symmetric encryption (a single key used for both encrypting and decrypting data, ideal for fast internal block storage / GCS envelope setups) and Asymmetric encryption (a key pair comprising a public key to encrypt and a private key to decrypt, crucial for digital signatures, external identity handshakes, and public verification). KMS keys are organized hierarchically: Key Ring -> Crypto Key -> Key Version. KMS enables Customer-Managed Encryption Keys (CMEK) to allow users direct custody over the keys protecting GCS buckets, BigQuery datasets, and GCE disks, rather than relying on standard Google-Managed Encryption Keys (GMEK). Supports hardware security modules (HSM) compliance standards.",
+      keyFeatures: [
+        "Symmetric encryption (fast single-key block/object operations).",
+        "Asymmetric encryption (public key encrypts, private key decrypts; digital signatures).",
+        "Hierarchical structure: Key Rings group Keys, which own individual key Versions.",
+        "Integrates with CMEK (Customer-Managed Encryption Keys) across major services (GCS, GCE, BigQuery)."
+      ],
+      whenToUse: [
+        "Enforcing strict digital key rotation, importing external on-premise keys (BYOK), or signing metadata.",
+        "Complying with regulatory audits demanding absolute custody and monitoring of encryption keys (CMEK)."
+      ],
+      whenNotToUse: [
+        "Storing raw database user passwords or text secrets directly (use Secret Manager to store static string payloads)."
+      ],
+      cliCommands: [
+        { command: "gcloud kms keyrings create my-keyring --location=[LOCATION]", desc: "Creates a new regional KMS key ring." },
+        { command: "gcloud kms keys create my-key --location=[LOCATION] --keyring=my-keyring --purpose=encryption", desc: "Creates a symmetric encryption key inside the keyring." }
+      ],
+      examTips: [
+        "Symmetric keys use the SAME key to encrypt and decrypt. Asymmetric keys use a key PAIR (public key to encrypt, private key to decrypt).",
+        "CMEK (Customer-Managed Encryption Keys) allows you to authorize services like GCS to use your KMS keys. KMS does not store raw secrets; that is Secret Manager's job."
+      ]
+    },
+    {
       id: "cloud-operations",
+      docLink: "https://cloud.google.com/monitoring/docs",
       name: "Cloud Operations Suite",
       category: "Operations",
       description: "Comprehensive performance monitoring, log aggregation, and error diagnostic tools for GCP workloads.",
@@ -682,6 +739,75 @@ const GCP_DATABASE = {
       ],
       examTips: [
         "Ops Agent must be installed inside GCE VMs to monitor internal metrics like memory usage and disk capacity."
+      ]
+    },
+    {
+      id: "pricing-calculator",
+      docLink: "https://cloud.google.com/products/calculator",
+      name: "Google Cloud Pricing Calculator",
+      category: "Management",
+      description: "Web-based upfront estimation tool to model and estimate the costs of GCP services based on custom utilization parameters (such as VM counts, disk sizes, network egress, and committed use discounts). Highly useful for pre-migration planning.",
+      keyFeatures: [
+        "Generate detailed cost breakdowns for individual services or entire logical multi-tier system designs.",
+        "Model custom VM sizes, Committed Use Discounts (CUDs), Sustained Use Discounts (SUDs), and storage classes.",
+        "Export and share secure web links of cost estimates directly with clients and finance managers."
+      ],
+      whenToUse: [
+        "Upfront budget planning, cost-benefit analyses, and architecture proposals before resources are provisioned.",
+        "Evaluating monthly pricing adjustments between different machine series or persistent storage options."
+      ],
+      whenNotToUse: [
+        "Real-time spend analytics or active resource invoice breakdowns (use Billing Reports, Budgets, and Cost Table instead)."
+      ],
+      cliCommands: [],
+      examTips: [
+        "Pricing Calculator is strictly for UPFRONT cost estimation. To manage active spending, configure Cloud Billing Alerts, budgets, and automated billing export to BigQuery."
+      ]
+    },
+    {
+      id: "cloud-foundation-toolkit",
+      docLink: "https://cloud.google.com/foundation-toolkit/docs",
+      name: "Cloud Foundation Toolkit (CFT)",
+      category: "Management",
+      description: "Provides a comprehensive suite of security-hardened, production-ready infrastructure templates and modular blueprints following Google Cloud best practices, primarily authored in Terraform or Deployment Manager.",
+      keyFeatures: [
+        "Modular templates covering foundational GCP landing zones: VPC routing, Folder structures, IAM structures, and central logging.",
+        "Strictly aligned with Google Cloud's official Security Foundations Blueprint.",
+        "Integrates directly into git-ops pipelines for declarative infrastructure deployments."
+      ],
+      whenToUse: [
+        "Bootstrapping new, enterprise-grade GCP organization structures containing strict multi-layered folder security.",
+        "Standardizing resource templates across massive engineering teams to enforce uniform security policies."
+      ],
+      whenNotToUse: [
+        "Simple standalone test VMs or quick sandbox environments that are created manually or with single CLI commands."
+      ],
+      cliCommands: [],
+      examTips: [
+        "Cloud Foundation Toolkit represents Google's official modular templates (typically Terraform) for landing zones, satisfying the 'reusable security-hardened organization blueprint' exam criteria."
+      ]
+    },
+    {
+      id: "cloud-marketplace",
+      docLink: "https://cloud.google.com/marketplace/docs",
+      name: "Google Cloud Marketplace",
+      category: "Management",
+      description: "Online service repository that enables users to rapidly discover, procure, and launch pre-configured third-party software applications, specialized VM images, and developer container sets fully integrated with GCP billing.",
+      keyFeatures: [
+        "One-click direct deployment of popular stacks (WordPress, Elasticsearch, MongoDB) onto GCE VMs, GKE, or serverless runtimes.",
+        "Consolidated invoicing: all third-party license costs and subscriptions appear directly on the main Google Cloud bill.",
+        "Private Marketplace: administrators can curate and whitelist approved software catalogs to restrict unapproved deployments."
+      ],
+      whenToUse: [
+        "Quickly deploying pre-packaged application packages or OS configurations with zero manual software setups.",
+        "Purchasing enterprise software licenses directly through Google Cloud to consume active committed-use discounts."
+      ],
+      whenNotToUse: [
+        "Deploying proprietary in-house microservices that must be developed and packaged internally from scratch."
+      ],
+      cliCommands: [],
+      examTips: [
+        "Cloud Marketplace enables deployment of pre-packaged developer setups with zero manual configuration. Under Consolidated Invoicing, software costs apply directly to your GCP Billing Account."
       ]
     }
   ],
@@ -833,6 +959,41 @@ const GCP_DATABASE = {
             "gcloud storage buckets create gs://[BUCKET_NAME] --location=[ZONE] --storage-class=[CLASS]",
             "gcloud storage cp [LOCAL_PATH] gs://[BUCKET_NAME]/",
             "gsutil signurl -d [DURATION] [KEY_FILE] gs://[BUCKET_NAME]/[FILE_NAME]"
+          ]
+        },
+        {
+          id: "file-block-storage",
+          title: "File & Block Storage: Persistent Disks, Local SSDs & Filestore",
+          summary: `ACE Candidates must distinguish between the three primary non-object storage paradigms:
+          
+          • <strong>Persistent Disks (Network Block Storage)</strong>:
+            - Durable, network-attached block volumes attached to GCE VM instances.
+            - Types: Standard HDD (sequential read workloads), Balanced SSD (general web app defaults), SSD (high database IOPS), and Extreme SSD.
+            - Features: Can expand capacity on-the-fly without VM downtime, but still requires logging in to resize the OS partition/filesystem. Supports Multi-Writer mode (attaches to multiple VMs in Read-Only or clustered read-write configurations).
+            
+          • <strong>Local SSDs (Host-Attached Block Storage)</strong>:
+            - Ephemeral, physically attached SSD block drives connected to the physical host GCE slot.
+            - Deliver ultra-high IOPS and extremely low sub-millisecond latencies.
+            - Ephemeral Nature: Data persists through VM live migrations, but is permanently wiped clean when the VM is STOPPED or DELETED (cannot be re-attached).
+            
+          • <strong>Cloud Filestore (Network Shared Filesystem)</strong>:
+            - Fully managed NAS server supporting NFSv3. Mounts concurrently to hundreds of VMs and GKE container pods.
+            - Supports POSIX-compliant file locking for multi-writer applications.
+            - Billed based on allocated storage capacity rather than metrics of scanned bytes.`,
+          whenToUse: [
+            "Persistent Disks: Primary VM boot volumes, high-performance database storage demanding low-latency network block writes.",
+            "Local SSDs: High-performance caching layers, database scratchpads, and temporary indexing folders.",
+            "Filestore: Shared filesystems mounted across multiple web servers, migrating legacy on-premise NFS filesystems."
+          ],
+          whenNotToUse: [
+            "Persistent Disks: Storing unstructured object files globally (use GCS to save costs).",
+            "Local SSDs: Storing long-term primary customer records or databases without custom application-level node replication.",
+            "Filestore: Low-cost file archiving (GCS is vastly cheaper for non-POSIX shared storage)."
+          ],
+          commands: [
+            "gcloud compute disks create my-disk --size=100GB --type=pd-balanced --zone=[ZONE]",
+            "gcloud compute instances attach-disk [VM_NAME] --disk=my-disk --zone=[ZONE]",
+            "gcloud filestore instances create my-nfs --zone=[ZONE] --tier=STANDARD --file-share=name='share1',capacity=1TB --network=name='default'"
           ]
         },
         {
@@ -1038,6 +1199,37 @@ const GCP_DATABASE = {
             "gcloud projects add-iam-policy-binding [PROJECT_ID] --member=user:[MEMBER] --role=[ROLE]",
             "gcloud iam service-accounts create [SERVICE_ACCOUNT] --display-name='Web Engine'",
             "gcloud projects add-iam-policy-binding [PROJECT_ID] --member=serviceAccount:[SERVICE_ACCOUNT]@[PROJECT_ID].iam.gserviceaccount.com --role=roles/storage.objectViewer"
+          ]
+        },
+        {
+          id: "kms-encryption",
+          title: "Access, Security & Encryption: Google Cloud KMS & Key Cryptography",
+          summary: `Cryptographic keys and absolute secrets management are vital security anchors for the ACE exam:
+          
+          • <strong>Google Cloud KMS (Key Management Service)</strong>:
+            - Fully-managed regional service that enables you to create, import, and rotate cryptographic keys.
+            - <i>Symmetric Cryptography</i>: Utilizes the exact same single key to both encrypt and decrypt data assets (ideal for fast envelope encryption blocks / GCS disks).
+            - <i>Asymmetric Cryptography</i>: Utilizes a mathematically linked key pair: a **Public Key** (available broadly to encrypt data) and a **Private Key** (kept in absolute confidence by the owner to decrypt data). Vital for digital signatures and client-identity handshake verifications.
+            
+          • <strong>Key Management Custody Levels</strong>:
+            - <i>Google-Managed Encryption Keys (GMEK)</i>: Google generates, owns, and rotates the keys protecting your assets by default. Zero developer overhead.
+            - <i>Customer-Managed Encryption Keys (CMEK)</i>: Keys are stored inside the customer's Cloud KMS project. The customer has total custody to grant, revoke, and rotate keys via IAM policies while major services (GCS, GCE, BigQuery) consume them.
+            - <i>Customer-Supplied Encryption Keys (CSEK)</i>: The customer generates and holds keys in their on-premises vault, sending raw key strings inside GCE VM boot calls or gsutil headers. Google never persists the keys.
+            
+          • <strong>Secrets Management (Secret Manager)</strong>:
+            - Specifically designed for static credentials like API keys, database user passwords, and private SSH certificates. Standard KMS is for binary key-wrapping and block-level cryptographic math.`,
+          whenToUse: [
+            "Customer-Managed Keys (CMEK): Mandated compliance audits requiring logging key usage and manual rotation.",
+            "Asymmetric Encryption: Signing metadata payloads, issuing digital certifications, or external server handshakes.",
+            "Secret Manager: Storing raw third-party token secrets or database credentials safely."
+          ],
+          whenNotToUse: [
+            "Customer-Supplied Keys (CSEK) if standard KMS cloud-native keys fit requirements (CSEK has massive operational key loss risks)."
+          ],
+          commands: [
+            "gcloud kms keyrings create project-keyring --location=[LOCATION]",
+            "gcloud kms keys create app-encrypt-key --location=[LOCATION] --keyring=project-keyring --purpose=encryption",
+            "gcloud secrets create db-password --replication-policy=automatic"
           ]
         },
         {
@@ -1652,64 +1844,789 @@ const GCP_DATABASE = {
       ],
       correctIndex: 1,
       explanation: "Partitioning a BigQuery table divides it into segments based on a date or integer column. Queries filtered by the partition column only scan the relevant segments, significantly reducing data processing costs and query latency."
+    },
+    {
+      id: "q41",
+      domain: "domain-5",
+      question: "You want to grant a developer the ability to create and download private keys for service accounts in a specific project, without granting them the full broad 'Editor' or 'Owner' primitive roles. Which predefined role should you assign?",
+      options: [
+        "roles/iam.serviceAccountUser",
+        "roles/iam.serviceAccountKeyAdmin",
+        "roles/iam.securityAdmin",
+        "roles/viewer"
+      ],
+      correctIndex: 1,
+      explanation: "The Service Account Key Admin role (roles/iam.serviceAccountKeyAdmin) allows users to create, delete, and manage service account keys without broader project administration permissions."
+    },
+    {
+      id: "q42",
+      domain: "domain-3",
+      question: "You need to securely connect two VPC networks located in different GCP projects within the same organization. The IP ranges of the networks do not overlap. What is the most performant, low-latency way to enable private IP communication between them?",
+      options: [
+        "Create an IPSec VPN tunnel using Cloud VPN.",
+        "Set up VPC Network Peering between the two networks.",
+        "Configure an External Application Load Balancer to proxy traffic.",
+        "Use a Shared VPC with the host project configuration."
+      ],
+      correctIndex: 1,
+      explanation: "VPC Network Peering allows you to connect two VPC networks in different projects or organizations so that resources can communicate privately using internal IP addresses with no external internet transit."
+    },
+    {
+      id: "q43",
+      domain: "domain-2",
+      question: "Your enterprise has strict compliance requirements. Audit logs stored in a Cloud Storage bucket must be retained for exactly 7 years and cannot be deleted or modified by any user, including the project owner, during that duration. Which GCS feature should you implement?",
+      options: [
+        "Set up an Object Lifecycle rule to delete objects older than 7 years.",
+        "Enable Object Versioning on the bucket.",
+        "Configure a Retention Policy on the bucket and lock it.",
+        "Use an Access Control List (ACL) to restrict write access to read-only."
+      ],
+      correctIndex: 2,
+      explanation: "A locked bucket Retention Policy enforces a WORM (Write Once Read Many) standard. Once locked, it cannot be deleted or overridden by anyone, even the project Owner, until the specified retention time has passed."
+    },
+    {
+      id: "q44",
+      domain: "domain-1",
+      question: "You are deploying an application on GKE. The workload experiences unpredictable traffic spikes, causing some Pods to go into a 'Pending' status due to insufficient CPU capacity on existing worker nodes. What should you enable to handle this dynamically?",
+      options: [
+        "Horizontal Pod Autoscaler (HPA)",
+        "Vertical Pod Autoscaler (VPA)",
+        "GKE Cluster Autoscaler",
+        "Managed Instance Group Autohealing"
+      ],
+      correctIndex: 2,
+      explanation: "The GKE Cluster Autoscaler automatically adds or removes VM worker nodes from your GKE node pools when there are unschedulable Pods due to resource limitations."
+    },
+    {
+      id: "q45",
+      domain: "domain-4",
+      question: "Your finance department needs to analyze daily cost spikes and run custom SQL queries on resources inside your GCP billing accounts. They want to connect Looker Studio for visual reports. What is the Google-recommended approach to set this up?",
+      options: [
+        "Write a Python script that parses billing logs in Cloud Logging.",
+        "Download billing CSV invoices monthly and upload them to Cloud Memorystore.",
+        "Configure Billing Data Export to BigQuery and query the datasets with SQL.",
+        "Provide primitive roles/owner access of the billing account to the finance team."
+      ],
+      correctIndex: 2,
+      explanation: "Configuring Cloud Billing export to BigQuery allows automatic daily loading of cost metrics. From BigQuery, teams can execute complex SQL analyses and build interactive visualization panels using Looker Studio."
+    },
+    {
+      id: "q46",
+      domain: "domain-5",
+      question: "You are deploying a Cloud Run service that connects to a Cloud SQL PostgreSQL database. You need to supply the database password securely, preventing it from appearing in plaintext inside environment configurations or build logs. Which service fits best?",
+      options: [
+        "Google Cloud KMS (Key Management Service)",
+        "Secret Manager",
+        "Compute Engine Metadata Server",
+        "Cloud Storage bucket with restricted ACLs"
+      ],
+      correctIndex: 1,
+      explanation: "Secret Manager is the GCP service designed specifically to store sensitive data like passwords, API keys, and certificates. Cloud Run can mount secrets as environment variables or filesystem volumes."
+    },
+    {
+      id: "q47",
+      domain: "domain-1",
+      question: "You have a web application running on App Engine Flexible. To cut down on idle compute infrastructure costs, you want the application instances to scale down to zero when there is no traffic. What is the most effective solution?",
+      options: [
+        "Configure App Engine Flex to scale to zero using app.yaml configurations.",
+        "Migrate the application runtime to App Engine Standard Environment.",
+        "Move the web application to a single-tenant Compute Engine VM.",
+        "Attach a Spot VM to the App Engine Flexible deployment."
+      ],
+      correctIndex: 1,
+      explanation: "App Engine Flexible does not support scaling down to zero; it requires a minimum of 1 active instance. App Engine Standard environment natively supports scaling to zero instances to avoid compute costs during idle periods."
+    },
+    {
+      id: "q48",
+      domain: "domain-3",
+      question: "You have deployed a backend processing application on GCE VM instances within a private subnet. These VMs possess *only* internal private IP addresses. The application must regularly query an external third-party API on the internet. How can you facilitate this?",
+      options: [
+        "Enable Private Google Access on the subnet.",
+        "Assign public ephemeral IPs to all backend GCE instances.",
+        "Deploy a Cloud NAT gateway in the subnet's region.",
+        "Set up a VPC Peering link to the external API's network."
+      ],
+      correctIndex: 2,
+      explanation: "Cloud NAT allows GCE VMs without public IPs to securely initiate connections to the internet (outbound traffic) for updates or API queries, while blocking unsolicited incoming traffic."
+    },
+    {
+      id: "q49",
+      domain: "domain-2",
+      question: "You are migrating an on-premise application cache running on Redis to GCP. The database cache must be fully managed, support sub-millisecond read latency, and automatically failover across zones in the same region. Which service should you choose?",
+      options: [
+        "Cloud Memorystore for Redis in High Availability (HA) tier",
+        "Deploy Redis on a GKE cluster with manual node mounting",
+        "Cloud Spanner in multi-region setup",
+        "Firestore in Datastore mode"
+      ],
+      correctIndex: 0,
+      explanation: "Cloud Memorystore for Redis is GCP's fully managed Redis service. The High Availability (HA) tier automatically provisions a primary node and a standby replica in a different zone with automatic failover."
+    },
+    {
+      id: "q50",
+      domain: "domain-4",
+      question: "You want to set up an alert policy that sends a notification to your team's Slack channel whenever a production VM instance's CPU utilization exceeds 85% for more than 5 minutes. What service should you use?",
+      options: [
+        "Cloud Logging sinks",
+        "Cloud Monitoring Alerting Policies",
+        "Google Cloud Deployment Manager triggers",
+        "Cloud Pub/Sub push notification queue"
+      ],
+      correctIndex: 1,
+      explanation: "Cloud Monitoring allows you to define Alerting Policies. You can set conditions (such as CPU > 85% for 5 minutes) and attach notification channels like Slack, Webhooks, or Email."
+    },
+    {
+      id: "q51",
+      domain: "domain-5",
+      question: "A security compliance auditor needs to inspect all resource metadata across your entire GCP Organization (including all folders and projects) to confirm IAM policies. What is the most efficient way to authorize this?",
+      options: [
+        "Grant the primitive role 'Owner' to the auditor's email in every project individually.",
+        "Grant the predefined role 'Viewer' (roles/viewer) at the Organization resource root level.",
+        "Generate a service account and attach it to the auditor's local desktop.",
+        "Create a custom role with billing admin rights at the folder level."
+      ],
+      correctIndex: 1,
+      explanation: "IAM permissions are inherited down the resource hierarchy. Granting the Viewer role at the Organization root level automatically propagates read-only metadata viewing access to all Folders, Projects, and resources."
+    },
+    {
+      id: "q52",
+      domain: "domain-1",
+      question: "You run a stateful database on a group of GCE VMs. You want to ensure that if a VM instance experiences OS-level crashes or database engine hangs, the system automatically detects this and redeploys the instance. What is the Google-recommended approach?",
+      options: [
+        "Write a cron job on a manager VM that periodically executes ping scripts.",
+        "Configure a Managed Instance Group (MIG) with an Autohealing policy and an HTTP health check.",
+        "Move the database to GKE Standard with horizontal autoscaling.",
+        "Enable Spot VM preemptible scheduling to recycle nodes daily."
+      ],
+      correctIndex: 1,
+      explanation: "Managed Instance Groups support Autohealing. By configuring an active health check (like an HTTP path or TCP port check), the MIG automatically recreates individual VM instances if they fail the health criteria."
+    },
+    {
+      id: "q53",
+      domain: "domain-3",
+      question: "You are launching a global consumer-facing web application that will be hosted in both the US and Europe. You need a load balancing configuration that provides a single global external IP address, routes clients to the closest backend region based on latency, and handles SSL termination at the edge. Which balancer fits?",
+      options: [
+        "Regional External Application Load Balancer",
+        "Global External Application Load Balancer",
+        "External TCP/UDP Network Load Balancer (Proxy)",
+        "Internal Application Load Balancer"
+      ],
+      correctIndex: 1,
+      explanation: "The Global External Application Load Balancer is a Layer 7 proxy that uses a single global IP, terminates SSL close to users via Google's edge points, and intelligently routes traffic based on proximity and backend health."
+    },
+    {
+      id: "q54",
+      domain: "domain-2",
+      question: "You are setting up a high-performance database cluster on GCE VMs. You want to configure a block storage volume that can be mounted as Read-Write on the primary active VM, but must also be mounted as Read-Only on multiple standby replica VMs simultaneously. What should you configure?",
+      options: [
+        "A Cloud Storage bucket with gcsfuse mounts.",
+        "A Persistent Disk configured in Multi-Writer mode.",
+        "A Cloud Filestore NFS share.",
+        "Multiple Local SSDs attached to the VMs."
+      ],
+      correctIndex: 1,
+      explanation: "GCP Persistent Disks support Multi-Writer mode (for SSD and Balanced PDs), allowing up to 10 VMs to attach a single disk. One VM can attach as Read-Write while the rest attach as Read-Only, or all as Read-Only."
+    },
+    {
+      id: "q55",
+      domain: "domain-4",
+      question: "Your developers run large analytical queries on a BigQuery database. Several queries scan over 20TB of data, incurring high on-demand pricing costs. You want to enforce a safeguard that prevents queries from running if they will scan more than 5TB. What should you do?",
+      options: [
+        "Partition and cluster all BigQuery tables immediately.",
+        "Configure a maximum bytes billed limit for queries in the query settings.",
+        "Export the BigQuery tables to GCS Standard class to save on query costs.",
+        "Configure custom Slack alerts whenever a query takes more than 1 minute."
+      ],
+      correctIndex: 1,
+      explanation: "Setting the 'Maximum bytes billed' in BigQuery query settings terminates queries before execution if the estimate exceeds the limit. This prevents massive runaway on-demand costs."
+    },
+    {
+      id: "q56",
+      domain: "domain-5",
+      question: "A developer wants to connect to a Compute Engine virtual machine instance via SSH from their local command terminal using the gcloud CLI. How does the gcloud command authorize this connection by default?",
+      options: [
+        "It prompts the user to type the VM's administrator OS password.",
+        "It automatically creates and registers temporary SSH key pairs in project metadata or leverages OS Login.",
+        "It opens port 22 globally to the public internet.",
+        "It routes the connection through a Cloud Storage bucket."
+      ],
+      correctIndex: 1,
+      explanation: "By executing 'gcloud compute ssh', the Google Cloud SDK automatically generates a local SSH key pair, uploads the public key to project metadata (or OS Login profile), and connects securely over SSH."
+    },
+    {
+      id: "q57",
+      domain: "domain-1",
+      question: "You want to deploy a docker container image serverlessly on GCP. The service requires 32GB RAM and 8 vCPUs to handle heavy mathematical processing, and it must scale down to zero when idle. Which platform meets these specs?",
+      options: [
+        "App Engine Standard Environment",
+        "Cloud Run",
+        "Cloud Functions (1st Gen)",
+        "GKE Autopilot running small pods"
+      ],
+      correctIndex: 1,
+      explanation: "Cloud Run supports container deployments and allows resource allocations up to 8 vCPUs and 32GB of memory. It also supports scaling down to zero when there is no traffic."
+    },
+    {
+      id: "q58",
+      domain: "domain-3",
+      question: "You are the network administrator for a large company. You want to centralize IP space allocation, firewall configurations, and VPN routing inside a single host project, while allowing developer teams to spin up VMs in separate service projects. What should you configure?",
+      options: [
+        "VPC Peering between all project networks.",
+        "A Shared VPC.",
+        "Multiple HA VPN tunnels connecting the projects.",
+        "An External Network Load Balancer proxying project subnets."
+      ],
+      correctIndex: 1,
+      explanation: "A Shared VPC allows an organization to connect resources from multiple projects (Service Projects) to a common, centrally administered VPC network (Host Project)."
+    },
+    {
+      id: "q59",
+      domain: "domain-2",
+      question: "You are designing an application that ingests continuous telemetry streams from millions of IoT devices simultaneously. Write volumes are massive (terabytes per hour) and require sub-10ms write latency. Which GCP storage service is optimized for this write-heavy latency?",
+      options: [
+        "Cloud Spanner",
+        "Cloud Bigtable",
+        "BigQuery",
+        "Cloud SQL MySQL"
+      ],
+      correctIndex: 1,
+      explanation: "Cloud Bigtable is Google's NoSQL wide-column database. It is explicitly designed for massive, low-latency write workloads (IoT sensors, time-series data, clickstreams)."
+    },
+    {
+      id: "q60",
+      domain: "domain-4",
+      question: "You want to process a continuous stream of metrics pushed to Cloud Pub/Sub, perform deduplication in real-time, and write the output directly into BigQuery. You want a fully-managed serverless execution engine. Which service fits?",
+      options: [
+        "Cloud Dataproc running Spark streaming",
+        "Cloud Dataflow running Apache Beam pipelines",
+        "App Engine Flexible running Node.js",
+        "Compute Engine MIG with cron auto-pulls"
+      ],
+      correctIndex: 1,
+      explanation: "Cloud Dataflow is a serverless data processing engine that executes Apache Beam streaming and batch pipelines. It automatically scales worker nodes based on telemetry data."
+    },
+    {
+      id: "q61",
+      domain: "domain-1",
+      question: "You are planning to run fault-tolerant containerized batch scripts on GKE worker nodes. You want to maximize cost savings on compute nodes. The workloads can survive interruptions. What node pool configuration should you use?",
+      options: [
+        "Enable Spot VMs in the node pool configuration.",
+        "Configure Sole-Tenant VM nodes.",
+        "Disable GKE Cluster Autoscaler.",
+        "Use App Engine Flexible instance templates."
+      ],
+      correctIndex: 0,
+      explanation: "Spot VMs offer steep discounts on GCE computing nodes. GKE node pools configured with Spot VMs are ideal for running stateless, fault-tolerant batch workloads at a fraction of the cost."
+    },
+    {
+      id: "q62",
+      domain: "domain-2",
+      question: "You want to store archival backups in Cloud Storage buckets. The backups must be kept indefinitely. To save costs, you want objects to transition from Standard class to Nearline after 30 days, and to Archive class after 365 days. What should you configure?",
+      options: [
+        "A Cloud Function that moves files daily.",
+        "An Object Lifecycle Management policy with transition actions.",
+        "Enable Object Versioning on the bucket.",
+        "A custom cron job script on a GCE instance."
+      ],
+      correctIndex: 1,
+      explanation: "Object Lifecycle Management allows you to define rules that transition GCS files to colder, cheaper storage classes (or delete them) based on age, creation date, or versioning state."
+    },
+    {
+      id: "q63",
+      domain: "domain-3",
+      question: "You are setting up VPC Firewall rules. You want to allow incoming TCP port 80 traffic to a web server VM, but block all other incoming traffic to the VM. You have two overlapping firewall rules. Which setting determines which rule is evaluated first?",
+      options: [
+        "The alphabetical name of the rule.",
+        "The rule priority (lower integers represent higher priority).",
+        "The order of creation timestamp.",
+        "The geographical location of the subnet."
+      ],
+      correctIndex: 1,
+      explanation: "GCP VPC Firewall rules use numeric priorities (from 0 to 65535). Rules with lower integers (e.g. 1000) have higher priority and are evaluated before rules with higher integers (e.g. 65535)."
+    },
+    {
+      id: "q64",
+      domain: "domain-5",
+      question: "A developer needs to deploy an application to a GCE VM. The VM must run under a specific service account identity to access BigQuery. Which role must the developer have on the service account to associate it with the VM?",
+      options: [
+        "roles/iam.serviceAccountKeyAdmin",
+        "roles/iam.serviceAccountUser",
+        "roles/iam.securityAdmin",
+        "roles/viewer"
+      ],
+      correctIndex: 1,
+      explanation: "The Service Account User role (roles/iam.serviceAccountUser) allows an identity (like a developer) to associate a service account with a resource (like a VM or container pool) to run workloads under that identity."
+    },
+    {
+      id: "q65",
+      domain: "domain-4",
+      question: "You have a Dataproc Hadoop cluster processing large datasets. To minimize costs, you want to delete the Dataproc cluster when the daily processing jobs finish, without losing the processed outputs or HDFS files. How should you design this?",
+      options: [
+        "Move the data to local SSDs attached to the worker nodes.",
+        "Store the output data directly in Cloud Storage (GCS) using the 'gs://' scheme instead of internal HDFS.",
+        "Configure automatic backup snapshots of the master VM.",
+        "Disable Spot VMs on the cluster."
+      ],
+      correctIndex: 1,
+      explanation: "Storing inputs and outputs in GCS (Cloud Storage) decouples compute from storage. This allows you to safely delete Dataproc clusters when idle to stop VM compute costs, without losing data."
+    },
+    {
+      id: "q66",
+      domain: "domain-1",
+      question: "You have updated the GCE Instance Template used by your Managed Instance Group (MIG). You want to apply this new template to all running VM instances gradually, ensuring that at least 3 instances remain healthy during the rolling update. What should you configure?",
+      options: [
+        "Set the update policy to 'Opportunistic'.",
+        "Use a 'Rolling Update' with maxSurge or maxUnavailable parameters.",
+        "Recreate the entire MIG manually.",
+        "Move the instances to a Shared VPC host."
+      ],
+      correctIndex: 1,
+      explanation: "MIG rolling updates allow you to deploy a new template across active instances. By configuring maxUnavailable or maxSurge parameters, you control the pace of deployment to maintain service uptime."
+    },
+    {
+      id: "q67",
+      domain: "domain-2",
+      question: "You are provisioning a production Cloud SQL PostgreSQL database. You need to ensure the database can tolerate a complete zonal outage without data loss or manual failover. Which configuration should you choose?",
+      options: [
+        "Create a read replica in a different region.",
+        "Enable High Availability (HA) with a synchronous standby replica in another zone.",
+        "Write a daily backup schedule to an Archive GCS bucket.",
+        "Migrate to Cloud Memorystore HA."
+      ],
+      correctIndex: 1,
+      explanation: "Cloud SQL High Availability (HA) provisions a primary master instance in one zone and a standby replica in a different zone in the same region. Writes are synchronously replicated, facilitating automatic failover during outages."
+    },
+    {
+      id: "q68",
+      domain: "domain-3",
+      question: "You want to create a new Virtual Private Cloud (VPC) network. You plan to deploy Compute instances in the US-East region and databases in the Europe-West region, allowing them to communicate over private IPs. What type of subnets should you create?",
+      options: [
+        "You must create two separate VPC networks and connect them via Cloud VPN.",
+        "Create a single custom VPC, and configure a subnet in us-east1 and a second subnet in europe-west1.",
+        "Configure an automatic subnet VPC network.",
+        "Use an External Application Load Balancer to bridge the subnets."
+      ],
+      correctIndex: 1,
+      explanation: "VPC networks in GCP are global resources. A single VPC network can host subnets in multiple distinct regions globally, allowing internal IP-to-IP private communication across regions."
+    },
+    {
+      id: "q69",
+      domain: "domain-5",
+      question: "You are setting up GCP identities for your enterprise. You want to synchronize your active on-premises Active Directory users and groups with Cloud Identity. Which tool should you use to automate this synchronization?",
+      options: [
+        "Directory Sync / Google Cloud Directory Sync (GCDS)",
+        "Workload Identity Federation",
+        "IAM Policy Analyzer",
+        "Deployment Manager blueprints"
+      ],
+      correctIndex: 0,
+      explanation: "Google Cloud Directory Sync (GCDS) and Directory Sync allow you to synchronize users and groups from Active Directory / LDAP directories to your Cloud Identity organization."
+    },
+    {
+      id: "q70",
+      domain: "domain-4",
+      question: "Your auditor requires you to export all audit logs from your GCP projects and store them in an Archive class Cloud Storage bucket for long-term cold storage. Which GCP feature should you configure?",
+      options: [
+        "A Cloud Trace logging sink.",
+        "A Log Router sink targeting the Cloud Storage bucket destination.",
+        "A custom python script running on a cron VM.",
+        "Enable billing export to GCS."
+      ],
+      correctIndex: 1,
+      explanation: "Cloud Logging Log Router sinks allow you to route/export matching logs (based on a query filter) to external destinations like Cloud Storage, BigQuery, or Pub/Sub."
+    },
+    {
+      id: "q71",
+      domain: "domain-1",
+      question: "You need to scale down the worker capacity of a GKE Standard cluster pool to save on compute costs during weekends. What is the most direct command or action to achieve this?",
+      options: [
+        "Run 'kubectl scale' on GKE master node pools.",
+        "Execute 'gcloud container clusters resize' specifying the target pool size.",
+        "Delete the VM instances directly from the GCE console.",
+        "Stop the GKE cluster control plane."
+      ],
+      correctIndex: 1,
+      explanation: "The command 'gcloud container clusters resize' allows you to set the target size (number of worker nodes) for a GKE node pool dynamically."
+    },
+    {
+      id: "q72",
+      domain: "domain-2",
+      question: "You are designing a prototype web application that will store user configurations. You want a document database that is fully managed, serverless, and charges strictly $0 when the app is completely idle. Which service meets this criteria?",
+      options: [
+        "Cloud SQL",
+        "Firestore in Native mode",
+        "Cloud Bigtable",
+        "Cloud Spanner"
+      ],
+      correctIndex: 1,
+      explanation: "Firestore is a serverless document database. It scales to zero and has no minimum base compute fees, charging strictly based on operations (reads/writes) and storage capacity used."
+    },
+    {
+      id: "q73",
+      domain: "domain-3",
+      question: "You want a GCE virtual machine running in a private subnet with no public IP to be able to access Google services, such as Cloud Storage buckets and BigQuery datasets, privately without routing traffic over the public internet. What must be enabled?",
+      options: [
+        "Cloud NAT",
+        "Private Google Access on the subnet.",
+        "VPC Peering.",
+        "Workload Identity Federation."
+      ],
+      correctIndex: 1,
+      explanation: "Private Google Access allows VM instances with only internal private IP addresses to securely query Google APIs and services (such as GCS and BigQuery) privately."
+    },
+    {
+      id: "q74",
+      domain: "domain-4",
+      question: "You want to partition a BigQuery table, but you also query the table using a secondary filter column 'department_id' which is highly Cardinal. You want to group similar departments together inside the partitions to minimize scans. What should you configure?",
+      options: [
+        "Create a secondary index on department_id.",
+        "Clustered Table on department_id.",
+        "Export the table daily to GCS Nearline.",
+        "Convert the table to a Cloud SQL format."
+      ],
+      correctIndex: 1,
+      explanation: "Clustering a BigQuery table organizes database storage based on specific columns, sorting row data to optimize queries that filter by those clustered columns."
+    },
+    {
+      id: "q75",
+      domain: "domain-5",
+      question: "You have assigned a user the role of 'Viewer' (roles/viewer) at the Folder level. You want to block this user from viewing resources inside a specific Project nested under that Folder. How can you accomplish this using standard IAM policies?",
+      options: [
+        "Deny the permission at the project level.",
+        "Assign roles/viewer to the project level, and select 'block inheritance' settings.",
+        "You cannot block inherited permissions in GCP IAM. Permissions are inherited top-down and are additive.",
+        "Use custom firewall rules to block the user."
+      ],
+      correctIndex: 2,
+      explanation: "GCP IAM policies are inherited top-down and are strictly additive. Inherited permissions from folders or organizations cannot be restricted or blocked at the project/resource levels."
+    },
+    {
+      id: "q76",
+      domain: "domain-1",
+      question: "You have deployed a new version of your web application to App Engine. You want to route 90% of active user sessions to the stable version v1, and 10% to the new version v2 to test performance. What should you configure?",
+      options: [
+        "Create a Cloud DNS record with weighted records.",
+        "Configure App Engine Traffic Splitting via the console or CLI.",
+        "Set up an External Network Load Balancer.",
+        "Run two different GCE VM instance groups."
+      ],
+      correctIndex: 1,
+      explanation: "App Engine includes native traffic splitting capabilities inside the console or CLI, allowing you to split incoming HTTP web traffic between versions based on cookies or IP addresses."
+    },
+    {
+      id: "q77",
+      domain: "domain-2",
+      question: "You want to establish automated daily backups of your primary production GCE boot drives. The backups must be incremental, stored securely across regions, and automatically expire after 14 days. What should you set up?",
+      options: [
+        "A custom cron script that runs 'gcloud compute disks' commands.",
+        "A Resource Policy for Disk Snapshot Schedules.",
+        "Object Versioning on GCS buckets.",
+        "Deploy a Cloud Storage Transfer job."
+      ],
+      correctIndex: 1,
+      explanation: "Resource Policies for Snapshot Schedules inside GCE allow you to schedule automated daily, weekly, or monthly incremental snapshots of persistent disks, complete with custom retention parameters."
+    },
+    {
+      id: "q78",
+      domain: "domain-3",
+      question: "You have a cluster of web servers running custom protocol traffic over Layer 4 (non-HTTP TCP). You want to configure an external load balancer to distribute traffic directly to the backend VMs with maximum performance, using port-based proxy routing. Which balancer should you choose?",
+      options: [
+        "Global External Application Load Balancer",
+        "External TCP/UDP Network Load Balancer",
+        "Internal Application Load Balancer",
+        "Cloud DNS routing"
+      ],
+      correctIndex: 1,
+      explanation: "The External TCP/UDP Network Load Balancer is a Layer 4 balancer that distributes incoming non-HTTP TCP/UDP traffic to backend VM instances."
+    },
+    {
+      id: "q79",
+      domain: "domain-4",
+      question: "You want to trace the source of crashes in your web app. You need a GCP diagnostic service that automatically aggregates application stack traces, identifies the languages, and groups similar exceptions together. Which service fits?",
+      options: [
+        "Cloud Trace",
+        "Error Reporting",
+        "Cloud Logging",
+        "Cloud Profiler"
+      ],
+      correctIndex: 1,
+      explanation: "Error Reporting analyzes crash details and stack traces generated in GCE, GKE, or Cloud Run, grouping similar exceptions together and offering Slack/email alert integrations."
+    },
+    {
+      id: "q80",
+      domain: "domain-5",
+      question: "A new engineer has joined your operations team. Why is it a major security risk to assign the primitive role 'Owner' (roles/owner) to this user context at the project level, according to GCP guidelines?",
+      options: [
+        "Owner roles cannot run any CLI commands.",
+        "Owner grants broad, non-restrictive admin permissions on all resources, including billing management and permission assignment, violating least privilege.",
+        "Owner roles are automatically billed per minute.",
+        "Owner permissions cannot inherit Folder-level policies."
+      ],
+      correctIndex: 1,
+      explanation: "Primitive roles (Owner, Editor, Viewer) grant broad, all-encompassing permissions. Assigning 'Owner' allows full read-write access to resources and the ability to modify permissions, violating least-privilege security policies."
+    },
+    {
+      id: "q81",
+      domain: "domain-1",
+      question: "You are setting up a virtual machine group on GCE. You noticed that the term 'Preemptible VMs' is often used interchangeably with 'Spot VMs'. What is a key billing difference between them?",
+      options: [
+        "Preemptible VMs are billed by the hour, whereas Spot VMs are billed by the second.",
+        "Spot VMs have no fixed 24-hour runtime limit and continue running if excess capacity exists, unlike Preemptible VMs which are terminated after 24 hours.",
+        "Spot VMs cost 50% more than Preemptible VMs.",
+        "Spot VMs require a Dedicated Interconnect connection."
+      ],
+      correctIndex: 1,
+      explanation: "Spot VMs represent the modern version of Preemptible VMs. Unlike Preemptible VMs (which have a strict 24-hour limit), Spot VMs can run indefinitely as long as GCP has excess physical capacity."
+    },
+    {
+      id: "q82",
+      domain: "domain-2",
+      question: "You want to allow a third-party client to upload a massive video file directly to a secure, private Cloud Storage bucket in your project. The client does not possess a Google account. What is the Google-recommended approach?",
+      options: [
+        "Set the private bucket's permissions to Public Read/Write.",
+        "Create a Signed URL with write permissions and send it to the client.",
+        "Generate a service account key, download the JSON, and email it to the client.",
+        "Peering the client's network to your project VPC."
+      ],
+      correctIndex: 1,
+      explanation: "A Signed URL grants secure, temporary, and scoped write/read access to private GCS objects for anyone, without requiring a Google account or credentials."
+    },
+    {
+      id: "q83",
+      domain: "domain-3",
+      question: "You have peered VPC-A with VPC-B. You then peer VPC-B with VPC-C. Can a VM in VPC-A privately communicate with a VM in VPC-C through these peering connections?",
+      options: [
+        "Yes, VPC Network Peering is fully transitive.",
+        "No, VPC Network Peering is non-transitive. To connect VPC-A with VPC-C, you must create a direct peering link between them.",
+        "Only if you configure an External Load Balancer.",
+        "Yes, but only if both VPCs are in the us-central1 region."
+      ],
+      correctIndex: 1,
+      explanation: "VPC Network Peering is strictly non-transitive. Traffic cannot hop across multiple peering links. A direct peering connection must exist between VPC-A and VPC-C."
+    },
+    {
+      id: "q84",
+      domain: "domain-4",
+      question: "You want to build a single operational dashboard that displays GCE VM CPU charts, Pub/Sub pending message counts, and Cloud SQL active connections in real-time. Which tool should you use?",
+      options: [
+        "Cloud Logging Query Panel",
+        "Cloud Monitoring Custom Dashboards",
+        "Google Cloud Deployment Manager dashboards",
+        "Looker Studio billing connections"
+      ],
+      correctIndex: 1,
+      explanation: "Cloud Monitoring Dashboards allow you to assemble charts, graphs, and metric displays across multiple GCP services in a single pane."
+    },
+    {
+      id: "q85",
+      domain: "domain-5",
+      question: "You want to assign a team member the permission to link GCP projects to your corporate billing account, but you do not want them to see project resources or create VMs. Which role should you assign on the Billing Account?",
+      options: [
+        "roles/billing.admin",
+        "roles/billing.user",
+        "roles/billing.viewer",
+        "roles/owner"
+      ],
+      correctIndex: 1,
+      explanation: "The Billing User role (roles/billing.user) allows an identity to link a GCP project to a billing account, without granting administrative rights over the billing account itself."
+    },
+    {
+      id: "q86",
+      domain: "domain-1",
+      question: "You are configuring autoscaling on a GKE deployment. You want the number of Pod replicas to increase or decrease automatically based on custom incoming request rates. Which resource should you configure?",
+      options: [
+        "Vertical Pod Autoscaler (VPA)",
+        "Horizontal Pod Autoscaler (HPA)",
+        "GKE Node Auto-Provisioning",
+        "Cloud Monitoring triggers"
+      ],
+      correctIndex: 1,
+      explanation: "The Horizontal Pod Autoscaler (HPA) adjusts Pod replica counts dynamically based on CPU, memory, or custom metrics (like query/request rates)."
+    },
+    {
+      id: "q87",
+      domain: "domain-2",
+      question: "Your production Cloud SQL database is experiencing heavy read performance degradation due to a massive surge in analytics reporting queries. What is the most efficient way to scale read throughput?",
+      options: [
+        "Resize the master database VM to a memory-optimized class.",
+        "Create Cloud SQL Read Replicas and route reporting queries to them.",
+        "Configure Memorystore Redis cache clusters.",
+        "Enable database High Availability (HA)."
+      ],
+      correctIndex: 1,
+      explanation: "Read Replicas allow you to distribute read workloads across regional copies of the database, offloading queries from the primary master database."
+    },
+    {
+      id: "q88",
+      domain: "domain-3",
+      question: "You are setting up an HA VPN to connect your on-premises office to a GCP VPC network. What is a key requirement to achieve the 99.99% SLA availability tier?",
+      options: [
+        "A Partner Interconnect circuit.",
+        "Two active tunnels from your local peer gateway to two distinct GCP HA VPN interfaces in a single region.",
+        "A Dedicated Interconnect circuit.",
+        "A custom static router in every subnet."
+      ],
+      correctIndex: 1,
+      explanation: "GCP HA VPN requires configuring two active IPSec tunnels from a single peer gateway (with two interfaces) to two distinct interfaces on the GCP HA VPN gateway to achieve a 99.99% SLA."
+    },
+    {
+      id: "q89",
+      domain: "domain-4",
+      question: "You want to receive email alerts when your project's monthly spend reaches 50%, 80%, and 100% of a $1000 budget. Will this budget setup automatically shut down or terminate your VM instances once spending reaches 100%?",
+      options: [
+        "Yes, budgets automatically disable resources to prevent overruns.",
+        "No, budgets are informational only. To automate resource shutdowns, you must route budget notifications to a Pub/Sub topic and trigger a Cloud Function.",
+        "Only if the project is associated with an active credit card.",
+        "Yes, but only if you use Spot VMs."
+      ],
+      correctIndex: 1,
+      explanation: "GCP Budgets and Alerts are purely informational. They do not shut down resources. Resource termination must be automated by routing budget events through Pub/Sub and triggering scripts (like a Cloud Function)."
+    },
+    {
+      id: "q90",
+      domain: "domain-5",
+      question: "Your security officer wants to restrict developers from creating public IP addresses on GCE VMs. What should you configure at the Folder level to enforce this constraint globally?",
+      options: [
+        "A strict IAM project role binding.",
+        "An Organization Policy Constraint with GCE rules.",
+        "A VPC firewall rule blocking port 80/443.",
+        "A custom Secret Manager policy."
+      ],
+      correctIndex: 1,
+      explanation: "Organization Policies allow you to enforce project constraints (like restricting external IP creations) globally or hierarchically at Folder/Org levels."
+    },
+    {
+      id: "q91",
+      domain: "domain-1",
+      question: "What is a key architectural advantage of Cloud Run's concurrency model over AWS Lambda?",
+      options: [
+        "Cloud Run can compile Python scripts on-the-fly.",
+        "A single Cloud Run container instance can process up to 250 concurrent requests simultaneously, whereas AWS Lambda instances process only one request at a time.",
+        "Cloud Run does not support scale-to-zero.",
+        "Cloud Run is billed by the month instead of by request."
+      ],
+      correctIndex: 1,
+      explanation: "Cloud Run instances support concurrency. A single container instance can handle up to 250 concurrent requests, reducing cold startups and costs."
+    },
+    {
+      id: "q92",
+      domain: "domain-2",
+      question: "You have transitioned several database backups to GCS Coldline class to save costs. If you delete or replace these files 15 days after creation, will you incur a cost penalty?",
+      options: [
+        "No, GCS classes charge strictly by storage size used.",
+        "Yes, GCS Coldline has a 90-day minimum retention duration. Deleting files earlier incurs an early deletion penalty charge.",
+        "Yes, but only if you use Object Versioning.",
+        "No, deletions are always free in object storage."
+      ],
+      correctIndex: 1,
+      explanation: "Colder GCS classes (Nearline, Coldline, Archive) have minimum storage retention durations (30, 90, and 365 days respectively). Deleting early incurs cost penalties."
+    },
+    {
+      id: "q93",
+      domain: "domain-3",
+      question: "You want your Global External Application Load Balancer to automatically redirect all incoming HTTP traffic to HTTPS. How should you design this?",
+      options: [
+        "Create a second load balancer that proxies port 80 to port 443.",
+        "Configure an HTTP-to-HTTPS redirect rule directly in the Load Balancer's URL map configurations.",
+        "Deploy a Cloud NAT gateway inside the Load Balancer subnet.",
+        "Peering the subnets to local databases."
+      ],
+      correctIndex: 1,
+      explanation: "GCP Global Application Load Balancers support native HTTP-to-HTTPS redirects. You can configure this directly inside the load balancer's URL map."
+    },
+    {
+      id: "q94",
+      domain: "domain-4",
+      question: "You are setting up a Dataproc Hadoop cluster to run non-critical daily batch analysis. You want to minimize costs. What cluster configuration should you specify?",
+      options: [
+        "Use Sole-Tenant nodes only.",
+        "Configure Dataproc worker pools to utilize Spot / Preemptible VMs.",
+        "Enable GKE cluster auto-provisioning.",
+        "Use Memorystore databases."
+      ],
+      correctIndex: 1,
+      explanation: "Dataproc clusters can utilize Spot/Preemptible VMs for worker nodes, allowing you to run big data operations at significant discounts."
+    },
+    {
+      id: "q95",
+      domain: "domain-5",
+      question: "You are managing service accounts for an application. According to security best practices, what should you do with service account keys?",
+      options: [
+        "Generate a single master key, and share it among all team members.",
+        "Avoid using downloaded JSON keys. Attach service accounts directly to GCE VMs, GKE Pods, or Cloud Run, and use Application Default Credentials.",
+        "Store JSON keys in a public Git repository to ensure accessibility.",
+        "Commit JSON keys directly to application codebases."
+      ],
+      correctIndex: 1,
+      explanation: "Downloading private JSON service account keys is a major security risk. Attach service accounts directly to compute resources and leverage Application Default Credentials."
+    },
+    {
+      id: "q96",
+      domain: "domain-1",
+      question: "Google Cloud is performing scheduled hardware maintenance on the physical host machine running your primary GCE VM. What happens to your running GCE instance during this maintenance window by default?",
+      options: [
+        "The GCE instance is immediately terminated and data is lost.",
+        "The VM is automatically live-migrated to a different physical host without downtime or rebooting.",
+        "The VM reboots into a single-tenant node.",
+        "The VM reboots and data in Local SSDs is erased."
+      ],
+      correctIndex: 1,
+      explanation: "Compute Engine VM instances support live migration by default. Google automatically migrates running instances to a different host without rebooting or disruption."
+    },
+    {
+      id: "q97",
+      domain: "domain-2",
+      question: "You need to store financial ledgers requiring strong global consistency, standard SQL queries, and multi-region write capability with 99.999% SLA availability. Which database service fits?",
+      options: [
+        "Cloud SQL PostgreSQL",
+        "Cloud Spanner",
+        "Cloud Bigtable",
+        "Firestore"
+      ],
+      correctIndex: 1,
+      explanation: "Cloud Spanner is GCP's globally scalable relational SQL database, offering synchronous multi-region writes, strong global consistency, and a 99.999% availability SLA."
+    },
+    {
+      id: "q98",
+      domain: "domain-3",
+      question: "You want to configure name resolution for Compute Engine VM instances inside a private VPC network. You do not want these DNS records to be queryable from outside the VPC. What should you configure?",
+      options: [
+        "A public DNS zone in Cloud DNS.",
+        "A private DNS zone in Cloud DNS attached to your specific VPC network.",
+        "A local /etc/hosts file script on every VM.",
+        "Enable Private Google Access."
+      ],
+      correctIndex: 1,
+      explanation: "Cloud DNS private zones allow you to define custom domain name lookups that are strictly queryable from within specified internal VPC networks."
+    },
+    {
+      id: "q99",
+      domain: "domain-4",
+      question: "You have created a Pub/Sub pull subscription. What is the maximum duration that unacknowledged messages will be stored in the Pub/Sub queue by default?",
+      options: [
+        "24 Hours",
+        "7 Days",
+        "30 Days",
+        "365 Days"
+      ],
+      correctIndex: 1,
+      explanation: "By default, Cloud Pub/Sub retains messages in subscription queues for up to 7 days before discarding them, regardless of delivery status."
+    },
+    {
+      id: "q100",
+      domain: "domain-5",
+      question: "You want to structure access policies for your enterprise resources. What is the correct hierarchy of resource organization in Google Cloud (from highest to lowest level of inheritance)?",
+      options: [
+        "Project -> Folder -> Organization -> Resource",
+        "Organization -> Folder -> Project -> Resource",
+        "Folder -> Organization -> Project -> Resource",
+        "Organization -> Project -> Folder -> Resource"
+      ],
+      correctIndex: 1,
+      explanation: "GCP resource hierarchy follows the order: Organization (root) -> Folders (nested department groups) -> Projects (resource containers) -> Resources (GCE VMs, GCS Buckets, etc.)."
     }
   ]
 };
-
-// Generates remaining questions up to exactly 100 to exhaustively cover the syllabus.
-// Since we need exactly 100 questions to fulfill the requirement, we will populate the rest programmatically
-// with diverse scenario questions on GCE, GKE, IAM, GCS, Cloud SQL, BigQuery, Networking, and Billing.
-const DOMAINS = ["domain-1", "domain-2", "domain-3", "domain-4", "domain-5"];
-const TOPICS = ["Compute", "Storage", "Database", "Networking", "IAM", "Operations", "Billing"];
-
-const sampleScenarioTemplates = [
-  {
-    question: "A company wants to manage their GCP infrastructure declaratively using YAML blueprints. They need to configure resources native to GCP. Which tool fits best?",
-    options: ["Terraform", "Deployment Manager", "Config Connector", "Cloud Dataproc"],
-    correctIndex: 1,
-    explanation: "Deployment Manager is GCP's native Infrastructure-as-Code tool that uses YAML and Python/Jinja2 templates to manage GCP resources declaratively."
-  },
-  {
-    question: "An application needs to ingest stream metrics from thousands of IoT devices simultaneously. You want a serverless message ingestion broker that automatically handles scale. Which service should you choose?",
-    options: ["Cloud Dataflow", "Cloud Pub/Sub", "Cloud SQL", "Cloud Storage"],
-    correctIndex: 1,
-    explanation: "Cloud Pub/Sub is a highly scalable, serverless messaging service designed to ingest real-time events and telemetry streams at massive scale."
-  },
-  {
-    question: "You want to set up an alert policy that sends a notification to Slack when a production VM instance's *memory utilization* exceeds 90%. What must be installed on the VM first?",
-    options: ["Cloud Trace Agent", "Cloud Ops Agent", "gcloud SDK package", "Shielded VM drivers"],
-    correctIndex: 1,
-    explanation: "Standard GCE metrics track CPU, disk, and network throughput. Tracking memory utilization or local disk space requires installing the Ops Agent on the VM."
-  },
-  {
-    question: "You want to analyze billing data using complex SQL queries and build interactive dashboards. Where should you export your billing data?",
-    options: ["Cloud Storage Archive", "BigQuery dataset", "Cloud Pub/Sub topic", "Cloud Memorystore"],
-    correctIndex: 1,
-    explanation: "Exporting billing data to BigQuery is the recommended approach for running advanced SQL cost analyses and connecting tools like Looker Studio."
-  },
-  {
-    question: "A service project in a Shared VPC needs to allow a VM to query resources. The network is managed in a Host project. Which role must the Shared VPC Admin assign to the service project developers?",
-    options: ["roles/owner", "roles/compute.networkUser", "roles/iam.securityAdmin", "roles/viewer"],
-    correctIndex: 1,
-    explanation: "To allow service project developers to deploy VMs into a Shared VPC subnet, the Shared VPC Admin must grant them the Compute Network User role."
-  }
-];
-
-// Seed remaining 60 questions programmatically to reach exactly 100 questions
-let qIndex = GCP_DATABASE.quiz.length + 1;
-while (GCP_DATABASE.quiz.length < 100) {
-  const t = sampleScenarioTemplates[(qIndex) % sampleScenarioTemplates.length];
-  const dom = DOMAINS[qIndex % DOMAINS.length];
-  GCP_DATABASE.quiz.push({
-    id: "q" + qIndex,
-    domain: dom,
-    question: `[Scenario Q${qIndex}] ` + t.question,
-    options: [...t.options],
-    correctIndex: t.correctIndex,
-    explanation: t.explanation + ` (Domain: ${dom})`
-  });
-  qIndex++;
-}
 
 // Export database for browser utilization
 if (typeof module !== 'undefined' && module.exports) {
@@ -1717,3 +2634,4 @@ if (typeof module !== 'undefined' && module.exports) {
 } else {
   window.GCP_DATABASE = GCP_DATABASE;
 }
+
